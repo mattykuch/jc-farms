@@ -96,9 +96,10 @@ df_summary <- df %>%
 print(df_summary)
 
 # -----------------------------------------------------------
-# Optional: Write summary to CSV or generate any custom report
+# Optional: Write df and df_summary to CSV 
 # -----------------------------------------------------------
-# write.csv(df_summary, "JC_Farms_PnL_Summary.csv", row.names = FALSE)
+# write.csv(df, "./data/JC_Farms_Data.csv", row.names = FALSE)
+# write.csv(df_summary, "./data/JC_Farms_PnL_Summary.csv", row.names = FALSE)
 
 ```
 
