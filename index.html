@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>JC Farms Dashboard</title>
+  <!-- Load Chart.js from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    h1, h2 {
+      margin-top: 0;
+    }
+    table {
+      border-collapse: collapse;
+      margin-bottom: 2em;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+    th {
+      background: #f9f9f9;
+      text-align: left;
+    }
+    .chart-container {
+      width: 90%;
+      max-width: 800px;
+      margin-bottom: 50px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>JC Farms Dashboard</h1>
+  <h2>Key Financial Metrics by Batch</h2>
+
+  <!-- Summary Table will be inserted here by JavaScript -->
+  <div id="summaryTable"></div>
+
+  <div class="chart-container">
+    <canvas id="chartExpensesRevenue"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <canvas id="chartNetProfit"></canvas>
+  </div>
+
+  <script>
+  /*******************************************************************
+   * 1) EMBED AND PARSE CSV DATA
+   ******************************************************************/
+  // Replace this multiline string with your real CSV contents (from jc_farms_transaction_data.csv).
+  // It must include the header row as well.
+  const csvData = `Record Start Time,Record End Time,Date of Transaction,Select Batch Number,Select Account Type,Select Category,Select Category.1,Select Category.2,Select Category.3,Description,Quantity,Unit Price (UGX),Amount (UGX),Amount Calculated (UGX),Comment,Please take photo of any receipt or proof of payment,Please take photo of any receipt or proof of payment_URL,_id,_uuid,_submission_time,_validation_status,_notes,_status,_submitted_by,__version__,_tags,_index
+2025-01-31,2025-01-31,2025-01-29,Batch 3,Cost of Goods Sold (COGS),,,Feed Costs,,Week 4 Feeds for Batch 3 - 170kgs mix,170,3000,510000,510000,,,435798016,d9590a97-9227-4ca0-9efe-01af67acba6a,2025-01-31,,,,submitted_via_web,mattkuch87,vndXtdUm72BfFettfRRAK9,,1
+2025-01-31,2025-01-31,2025-01-28,Batch 4,Cost of Goods Sold (COGS),,,Chicks Purchased,,Joseph bought 250 Day old chicks,250,3200,800000,800000,,,435824212,f316ff8d-0a5a-448e-9f18-a1fae6e120b8,2025-01-31,,,,submitted_via_web,mattkuch87,vndXtdUm72BfFettfRRAK9,,2
+2025-02-04,2025-02-04,2025-02-03,Batch 3,Cost of Goods Sold (COGS),,,Veterinary Supplies,,Vaccines Gumboro 500 doses for week 4,1,8000,8000,8000,,,436865976,8440fce6-e742-4c16-b7e8-5f26e43cc5c5,2025-02-04,,,,submitted_via_web,mattkuch87,vndXtdUm72BfFettfRRAK9,,3
+2025-02-04,2025-02-04,2025-02-03,Batch 4,Cost of Goods Sold (COGS),,,Veterinary Supplies,,500 doses of Newcastle ib for week 1,1,5500,5500,5500,,,436871999,ed1ae2c7-4428-443b-821f-6cb7ed08fc4c,2025-02-04,,,,submitted_via_web,mattkuch87,vndXtdUm72BfFettfRRAK9,,4
+2025-02-04,2025-02-04,2025-02-04,Batch 4,Operating Expenditure (OPEX),Utilities (Electricity, Water, etc.),,,,Charcoal,20,1500,30000,30000,,,436978487,188c5375-8c08-445d-bd50-1fc3da1b656f,2025-02-04,,,,submitted_via_web,mattkuch87,vndXtdUm72BfFettfRRAK9,,5
+...`; // Truncated for demonstration. Insert full data here.
+
+  // We'll parse CSV lines manually for a simpler demonstration
+  const lines = csvData.trim().split("\n");
+  const header = lines[0].split(",");
+
+  // Identify the indexes of the columns we need
+  const colBatch    = header.indexOf("Select Batch Number");
+  const colAcctType = header.indexOf("Select Account Type");
+  const colAmount   = header.indexOf("Amount (UGX)");
+
+  // We'll store data as an array of objects: [{batch, accountType, amount}, ...]
+  const transactions = [];
+
+  for (let i = 1; i < lines.length; i++) {
+    const row = lines[i].split(",");
+    if (row.length <= colAmount) continue; // skip empty or malformed lines
+    const batch = row[colBatch].trim();
+    const acctType = row[colAcctType].trim();
+    const amount = parseFloat(row[colAmount]) || 0;
+    transactions.push({ batch, acctType, amount });
+  }
+
+  /*******************************************************************
+   * 2) SUMMARIZE DATA BY BATCH & ACCOUNT TYPE
+   ******************************************************************/
+  // Let's track sums in an object keyed by batch.
+  // Example structure:
+  // sums = {
+  //   "Batch 3": {
+  //       "Cost of Goods Sold (COGS)": <number>,
+  //       "Operating Expenditure (OPEX)": <number>,
+  //       "Capital Expenditure (CAPEX)": <number>,
+  //       "Revenues": <number>,
+  //   },
+  //   "Batch 4": {...}, ...
+  // }
+  const sums = {};
+
+  transactions.forEach(({ batch, acctType, amount }) => {
+    if (!sums[batch]) {
+      sums[batch] = {
+        "Cost of Goods Sold (COGS)": 0,
+        "Operating Expenditure (OPEX)": 0,
+        "Capital Expenditure (CAPEX)": 0,
+        "Revenues": 0
+      };
+    }
+    if (acctType in sums[batch]) {
+      sums[batch][acctType] += amount;
+    } else {
+      // if we have an unexpected category, we can store it or skip it
+      // for safety, let’s store but only if it’s one of the four recognized
+      // otherwise do nothing
+      if (["Cost of Goods Sold (COGS)", "Operating Expenditure (OPEX)", "Capital Expenditure (CAPEX)", "Revenues"].includes(acctType)) {
+        sums[batch][acctType] += amount;
+      }
+    }
+  });
+
+  // Convert sums object to array for easier chart/table usage
+  const summaryData = Object.keys(sums).map(batchKey => {
+    const cogs  = sums[batchKey]["Cost of Goods Sold (COGS)"] || 0;
+    const opex  = sums[batchKey]["Operating Expenditure (OPEX)"] || 0;
+    const capex = sums[batchKey]["Capital Expenditure (CAPEX)"] || 0;
+    const rev   = sums[batchKey]["Revenues"] || 0;
+    const totalExpenses = cogs + opex + capex;
+    const netProfit = rev - totalExpenses;
+    return {
+      batch: batchKey,
+      cogs,
+      opex,
+      capex,
+      revenue: rev,
+      totalExpenses,
+      netProfit
+    };
+  });
+
+  // Sort summaryData by batch name (optional: if they are "Batch 3, Batch 4, etc.")
+  summaryData.sort((a, b) => a.batch.localeCompare(b.batch));
+
+  /*******************************************************************
+   * 3) BUILD & INSERT THE SUMMARY TABLE
+   ******************************************************************/
+  const tableContainer = document.getElementById("summaryTable");
+  const table = document.createElement("table");
+
+  // Table header
+  const thead = document.createElement("thead");
+  thead.innerHTML = `
+    <tr>
+      <th>Batch</th>
+      <th>COGS</th>
+      <th>OPEX</th>
+      <th>CAPEX</th>
+      <th>Revenue</th>
+      <th>Total Expenses</th>
+      <th>Net Profit</th>
+    </tr>
+  `;
+  table.appendChild(thead);
+
+  // Table body
+  const tbody = document.createElement("tbody");
+  summaryData.forEach(row => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${row.batch}</td>
+      <td>${row.cogs.toLocaleString()}</td>
+      <td>${row.opex.toLocaleString()}</td>
+      <td>${row.capex.toLocaleString()}</td>
+      <td>${row.revenue.toLocaleString()}</td>
+      <td>${row.totalExpenses.toLocaleString()}</td>
+      <td>${row.netProfit.toLocaleString()}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  tableContainer.appendChild(table);
+
+  /*******************************************************************
+   * 4) CHART: EXPENSES AND REVENUE BY BATCH (GROUPED BARS)
+   ******************************************************************/
+  // For Chart.js, we’ll build arrays for labels and each dataset
+  const labels = summaryData.map(d => d.batch);
+  const cogsData  = summaryData.map(d => d.cogs);
+  const opexData  = summaryData.map(d => d.opex);
+  const capexData = summaryData.map(d => d.capex);
+  const revData   = summaryData.map(d => d.revenue);
+
+  const ctx1 = document.getElementById("chartExpensesRevenue").getContext("2d");
+  new Chart(ctx1, {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "COGS",
+          data: cogsData
+        },
+        {
+          label: "OPEX",
+          data: opexData
+        },
+        {
+          label: "CAPEX",
+          data: capexData
+        },
+        {
+          label: "Revenue",
+          data: revData
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: "Expenses and Revenue by Batch"
+        }
+      },
+      scales: {
+        x: { title: { display: true, text: "Batch" } },
+        y: { title: { display: true, text: "Amount (UGX)" }, beginAtZero: true }
+      }
+    }
+  });
+
+  /*******************************************************************
+   * 5) CHART: NET PROFIT BY BATCH
+   ******************************************************************/
+  const netProfitData = summaryData.map(d => d.netProfit);
+
+  const ctx2 = document.getElementById("chartNetProfit").getContext("2d");
+  new Chart(ctx2, {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "Net Profit",
+          data: netProfitData
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: "Net Profit by Batch"
+        }
+      },
+      scales: {
+        x: { title: { display: true, text: "Batch" } },
+        y: { 
+          title: { display: true, text: "Net Profit (UGX)" },
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  </script>
+</body>
+</html>

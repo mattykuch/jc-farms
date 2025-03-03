@@ -1,0 +1,107 @@
+---
+title: <span style="color:white">JC Farms - PnL Reporting</span>
+subtitle: "A step by step walkthrough of how its automated"
+
+author: 
+- name: "Matthew Kuch"
+  email: kuch.matthew@gmail.com
+date: 02/24/2024
+
+title-block-banner: true
+title-block-banner-color: "black"
+
+format: html
+html:
+code-fold: false
+code-summary: "Code"
+execute: 
+  warning: false
+  message: false
+  echo: false
+css: style.css
+toc: true
+toc-location: left
+number-sections: false
+editor: visual
+fig-cap-location: margin
+---
+
+```{r warning=FALSE, message=FALSE}
+
+
+# -----------------------------------------------------------
+# Load libraries
+# -----------------------------------------------------------
+
+library(tidyverse)
+library(lubridate)
+library(highcharter)
+
+
+```
+
+*"Revenue is vanity, profit is sanity, but cash is king"* – Pehr G. Gyllenhammar
+
+...
+
+## Profit and Loss - Summary Table
+
+```{r}
+
+
+# -----------------------------------------------------------
+# 1. Read CSV data
+#    Replace 'path/to/jc_data_20250302.csv' with the actual file path
+# -----------------------------------------------------------
+df_raw <- read.csv(
+  file = "./data/jc_data_20250302.csv",
+  stringsAsFactors = FALSE
+)
+
+# -----------------------------------------------------------
+# 2. (Optional) Clean or rename columns for easier reference
+# -----------------------------------------------------------
+# Sometimes R automatically converts special characters (spaces, parentheses).
+# If your 'Amount (UGX)' column is not easy to reference, rename it:
+df <- df_raw %>%
+  rename(
+    Amount_UGX = `Amount..UGX.`
+  )
+
+# -----------------------------------------------------------
+# 3. Summarize amounts by batch and account type
+# -----------------------------------------------------------
+df_summary <- df %>%
+  # Group by the batch and the account type (Revenue, COGS, etc.)
+  group_by(Select.Batch.Number, Select.Account.Type) %>%
+  # Sum the amounts for each grouping
+  summarise(
+    Total_Amount = sum(Amount_UGX, na.rm = TRUE),
+    .groups = "drop"  # keep summarise from adding grouping structure
+  ) %>%
+  # Pivot so each account type becomes a column (COGS, OPEX, Revenues, CAPEX)
+  pivot_wider(
+    names_from  = Select.Account.Type,
+    values_from = Total_Amount,
+    values_fill = 0  # fill missing combinations with 0
+  ) %>%
+  # Create a Net Profit column
+  mutate(
+    Net_Profit = Revenues - `Cost of Goods Sold (COGS)` - `Operating Expenditure (OPEX)`
+  )
+
+# -----------------------------------------------------------
+# 4. Inspect the summarized P&L data
+# -----------------------------------------------------------
+print(df_summary)
+
+# -----------------------------------------------------------
+# Optional: Write summary to CSV or generate any custom report
+# -----------------------------------------------------------
+# write.csv(df_summary, "JC_Farms_PnL_Summary.csv", row.names = FALSE)
+
+```
+
+# References/Sources/Citations:
+
+-   JC Farms Transaction Data
