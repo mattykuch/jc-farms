@@ -1,5 +1,5 @@
 ---
-title: <span style="color:white">JC Farms - PnL Reporting</span>
+title: <span style="color:white">JC Farms - Financial Analysis</span>
 subtitle: "A step by step walkthrough of how its automated"
 
 author: 
@@ -36,6 +36,7 @@ fig-cap-location: margin
 library(tidyverse)
 library(lubridate)
 library(highcharter)
+library(DT)
 
 
 ```
@@ -44,17 +45,17 @@ library(highcharter)
 
 ...
 
-## Profit and Loss - Summary Table
+## Profit / Loss Statement - Summary Table
 
 ```{r}
 
 
 # -----------------------------------------------------------
 # 1. Read CSV data
-#    Replace 'path/to/jc_data_20250302.csv' with the actual file path
+#    
 # -----------------------------------------------------------
 df_raw <- read.csv(
-  file = "./data/jc_data_20250302.csv",
+  file = "./data/jc_farms_transaction_data_20250310.csv",
   stringsAsFactors = FALSE
 )
 
@@ -65,15 +66,18 @@ df_raw <- read.csv(
 # If your 'Amount (UGX)' column is not easy to reference, rename it:
 df <- df_raw %>%
   rename(
-    Amount_UGX = `Amount..UGX.`
-  )
+    Amount_UGX = `Amount..UGX.`,
+    Batch_Number = `Select.Batch.Number`
+  ) %>%
+  filter( Select.Account.Type != "Capital Expenditure (CAPEX)") |> 
+  filter(Batch_Number != "Batch 3")
 
 # -----------------------------------------------------------
 # 3. Summarize amounts by batch and account type
 # -----------------------------------------------------------
-df_summary <- df %>%
+df_summary <- df |> 
   # Group by the batch and the account type (Revenue, COGS, etc.)
-  group_by(Select.Batch.Number, Select.Account.Type) %>%
+  group_by(Batch_Number, Select.Account.Type) %>%
   # Sum the amounts for each grouping
   summarise(
     Total_Amount = sum(Amount_UGX, na.rm = TRUE),
@@ -85,15 +89,16 @@ df_summary <- df %>%
     values_from = Total_Amount,
     values_fill = 0  # fill missing combinations with 0
   ) %>%
-  # Create a Net Profit column
+  # Create a Total Costs and Net Profit column
   mutate(
-    Net_Profit = Revenues - `Cost of Goods Sold (COGS)` - `Operating Expenditure (OPEX)`
+    Total_Cost = `Cost of Goods Sold (COGS)` + `Operating Expenditure (OPEX)`,
+    Net_Profit = Revenues - Total_Cost
   )
 
 # -----------------------------------------------------------
-# 4. Inspect the summarized P&L data
+# 4. Make a table of the summarized P&L data
 # -----------------------------------------------------------
-print(df_summary)
+datatable(df_summary, filter = "top")
 
 # -----------------------------------------------------------
 # Optional: Write df and df_summary to CSV 
@@ -102,6 +107,43 @@ print(df_summary)
 # write.csv(df_summary, "./data/JC_Farms_PnL_Summary.csv", row.names = FALSE)
 
 ```
+
+## Cost per bird & Profit per bird
+
+```{r}
+
+# Example: Summarize total birds, then join back to P&L table
+
+# Number of dead birds
+dead_birds <- 3
+
+# Step 1: Identify the transactions that represent "Chicks Purchased"
+# (assuming "Chicks Purchased" is indicated in `Select.Category.2`)
+df_birds <- df %>%
+  filter(Select.Category.2 == "Chicks Purchased") %>%
+  group_by(Batch_Number) %>%
+  summarise(
+    Total_Birds = mean(Quantity - dead_birds, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Step 2: Join total birds to your P&L summary
+df_pnl_with_birds <- df_summary %>%
+  left_join(df_birds, by = "Batch_Number") %>%
+  mutate(
+    Cost_per_Bird = (Total_Cost / Total_Birds),
+    
+    Profit_per_Bird = (Net_Profit / Total_Birds)
+    )
+
+# -----------------------------------------------------------
+# 4. Make a table of the summarized P&L data
+# -----------------------------------------------------------
+datatable(df_pnl_with_birds, filter = "top")
+
+```
+
+...
 
 # References/Sources/Citations:
 

@@ -9,7 +9,7 @@
 <meta name="author" content="Matthew Kuch">
 <meta name="dcterms.date" content="2024-03-03">
 
-<title>JC Farms - PnL Reporting</title>
+<title>JC Farms - Financial Analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -51,6 +51,34 @@ ul.task-list li input[type="checkbox"] {
         color: black;
       }
 </style>
+<link href="index_files/libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+
+<script src="index_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+
+<link href="index_files/libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+
+<script src="index_files/libs/datatables-binding-0.33/datatables.js"></script>
+
+<script src="index_files/libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+
+<link href="index_files/libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+
+<link href="index_files/libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+
+<script src="index_files/libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+
+<link href="index_files/libs/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet">
+
+<script src="index_files/libs/nouislider-7.0.10/jquery.nouislider.min.js"></script>
+
+<link href="index_files/libs/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet">
+
+<script src="index_files/libs/selectize-0.12.0/selectize.min.js"></script>
+
+<link href="index_files/libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+
+<script src="index_files/libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
 
 
 <link rel="stylesheet" href="style.css">
@@ -61,7 +89,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title"><span style="color:white">JC Farms - PnL Reporting</span></h1>
+      <h1 class="title"><span style="color:white">JC Farms - Financial Analysis</span></h1>
             <p class="subtitle lead">A step by step walkthrough of how its automated</p>
                       </div>
   </div>
@@ -93,7 +121,8 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#profit-and-loss---summary-table" id="toc-profit-and-loss---summary-table" class="nav-link active" data-scroll-target="#profit-and-loss---summary-table">Profit and Loss - Summary Table</a></li>
+  <li><a href="#profit-loss-statement---summary-table" id="toc-profit-loss-statement---summary-table" class="nav-link active" data-scroll-target="#profit-loss-statement---summary-table">Profit / Loss Statement - Summary Table</a></li>
+  <li><a href="#cost-per-bird-profit-per-bird" id="toc-cost-per-bird-profit-per-bird" class="nav-link" data-scroll-target="#cost-per-bird-profit-per-bird">Cost per bird &amp; Profit per bird</a></li>
   <li><a href="#referencessourcescitations" id="toc-referencessourcescitations" class="nav-link" data-scroll-target="#referencessourcescitations">References/Sources/Citations:</a></li>
   </ul>
 </nav>
@@ -108,22 +137,24 @@ ul.task-list li input[type="checkbox"] {
 
 <p><em>“Revenue is vanity, profit is sanity, but cash is king”</em> – Pehr G. Gyllenhammar</p>
 <p>…</p>
-<section id="profit-and-loss---summary-table" class="level2">
-<h2 class="anchored" data-anchor-id="profit-and-loss---summary-table">Profit and Loss - Summary Table</h2>
+<section id="profit-loss-statement---summary-table" class="level2">
+<h2 class="anchored" data-anchor-id="profit-loss-statement---summary-table">Profit / Loss Statement - Summary Table</h2>
 <div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 6
-  Select.Batch.Number `Capital Expenditure (CAPEX)` `Cost of Goods Sold (COGS)`
-  &lt;chr&gt;                                       &lt;int&gt;                       &lt;int&gt;
-1 Batch 3                                     15000                      719000
-2 Batch 4                                     35000                     2369000
-3 Batch 5                                    412000                      675000
-4 Batch 6                                    134000                     1795000
-5 Batch 7                                         0                     1120000
-# ℹ 3 more variables: `Operating Expenditure (OPEX)` &lt;int&gt;, Revenues &lt;int&gt;,
-#   Net_Profit &lt;int&gt;</code></pre>
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-7ae24d81603921525c8c" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-7ae24d81603921525c8c">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td><\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"1561000\" data-max=\"2616500\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"69000\" data-max=\"497500\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0\" data-max=\"2585000\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"1630000\" data-max=\"3114000\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"-2643500\" data-max=\"-529000\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","data":[["1","2","3","4"],["Batch 4","Batch 5","Batch 6","Batch 7"],[2616500,1632000,2387000,1561000],[497500,86000,256500,69000],[2585000,0,0,0],[3114000,1718000,2643500,1630000],[-529000,-1718000,-2643500,-1630000]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Batch_Number<\/th>\n      <th>Cost of Goods Sold (COGS)<\/th>\n      <th>Operating Expenditure (OPEX)<\/th>\n      <th>Revenues<\/th>\n      <th>Total_Cost<\/th>\n      <th>Net_Profit<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5,6]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Batch_Number","targets":1},{"name":"Cost of Goods Sold (COGS)","targets":2},{"name":"Operating Expenditure (OPEX)","targets":3},{"name":"Revenues","targets":4},{"name":"Total_Cost","targets":5},{"name":"Net_Profit","targets":6}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
+</section>
+<section id="cost-per-bird-profit-per-bird" class="level2">
+<h2 class="anchored" data-anchor-id="cost-per-bird-profit-per-bird">Cost per bird &amp; Profit per bird</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-023228c6f6ff9bd42d72" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-023228c6f6ff9bd42d72">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td><\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"1561000\" data-max=\"2616500\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"69000\" data-max=\"497500\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0\" data-max=\"2585000\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"1630000\" data-max=\"3114000\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"-2643500\" data-max=\"-529000\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"197\" data-max=\"347\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"4697.40634005764\" data-max=\"12607.2874493927\" data-scale=\"12\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"-8720.81218274112\" data-max=\"-2141.7004048583\" data-scale=\"12\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","data":[["1","2","3","4"],["Batch 4","Batch 5","Batch 6","Batch 7"],[2616500,1632000,2387000,1561000],[497500,86000,256500,69000],[2585000,0,0,0],[3114000,1718000,2643500,1630000],[-529000,-1718000,-2643500,-1630000],[247,197,347,347],[12607.28744939271,8720.812182741116,7618.155619596542,4697.406340057637],[-2141.700404858299,-8720.812182741116,-7618.155619596542,-4697.406340057637]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Batch_Number<\/th>\n      <th>Cost of Goods Sold (COGS)<\/th>\n      <th>Operating Expenditure (OPEX)<\/th>\n      <th>Revenues<\/th>\n      <th>Total_Cost<\/th>\n      <th>Net_Profit<\/th>\n      <th>Total_Birds<\/th>\n      <th>Cost_per_Bird<\/th>\n      <th>Profit_per_Bird<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5,6,7,8,9]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Batch_Number","targets":1},{"name":"Cost of Goods Sold (COGS)","targets":2},{"name":"Operating Expenditure (OPEX)","targets":3},{"name":"Revenues","targets":4},{"name":"Total_Cost","targets":5},{"name":"Net_Profit","targets":6},{"name":"Total_Birds","targets":7},{"name":"Cost_per_Bird","targets":8},{"name":"Profit_per_Bird","targets":9}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>…</p>
 </section>
 <section id="referencessourcescitations" class="level1">
 <h1>References/Sources/Citations:</h1>
