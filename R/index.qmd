@@ -1,6 +1,6 @@
 ---
 title: <span style="color:white">JC Farms - Financial Analysis</span>
-subtitle: "A step by step walkthrough of how its automated"
+subtitle: "Key Performance Metrics"
 
 author: 
 - name: "Matthew Kuch"
