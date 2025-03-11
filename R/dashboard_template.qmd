@@ -1,0 +1,34 @@
+---
+title: "My first dashboard"
+format: dashboard
+execute: 
+  warning: false
+  message: false
+---
+
+
+```{r}
+library(tidyverse)
+library(highcharter)
+```
+
+
+# Adding our first card to the dashboard - ggplot version
+
+
+```{r}
+#| title: Highway versus city mileage
+ggplot(mpg, aes(x=cty, y=hwy)) + 
+  geom_point()
+
+
+```
+
+# Adding another tab for the same data - highcharter version
+
+```{r}
+#| title: Highway versus city mileage
+hchart(mpg, "scatter", hcaes(x=cty, y=hwy), name = "Highway versus Ciry miles per gallon", showInLegend = FALSE)
+
+```
+
