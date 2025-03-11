@@ -21,6 +21,10 @@ library(highcharter)
 ggplot(mpg, aes(x=cty, y=hwy)) + 
   geom_point()
 
+#| title: Drive types
+ggplot(mpg, aes(x=drv)) + 
+  geom_bar()
+
 
 ```
 
@@ -29,6 +33,9 @@ ggplot(mpg, aes(x=cty, y=hwy)) +
 ```{r}
 #| title: Highway versus city mileage
 hchart(mpg, "scatter", hcaes(x=cty, y=hwy), name = "Highway versus Ciry miles per gallon", showInLegend = FALSE)
+
+#| title: Drive types
+hchart(mpg, "scatter", hcaes(x=displ, y=cyl), name = "Drive Types", showInLegend = FALSE)
 
 ```
 
