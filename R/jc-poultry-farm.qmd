@@ -1,0 +1,91 @@
+---
+title: "jc-poultry-farm"
+format: dashboard
+editor: visual
+---
+
+```{r warning=FALSE, message=FALSE }
+
+# -----------------------------------------------------------
+# Load libraries
+# -----------------------------------------------------------
+
+library(tidyverse)
+library(lubridate)
+library(highcharter)
+library(DT)
+
+# -----------------------------------------------------------
+# 1. Read CSV data
+#    
+# -----------------------------------------------------------
+df_raw <- read.csv(
+  file = "./data/jc_farms_transaction_data_20250312.csv",
+  stringsAsFactors = FALSE
+)
+
+# -----------------------------------------------------------
+# 2. (Optional) Clean or rename columns for easier reference
+# -----------------------------------------------------------
+# Sometimes R automatically converts special characters (spaces, parentheses).
+# If your 'Amount (UGX)' column is not easy to reference, rename it:
+df <- df_raw %>%
+  rename(
+    Amount_UGX = `Amount..UGX.`,
+    Batch_Number = `Select.Batch.Number`
+  ) %>%
+  filter( Select.Account.Type != "Capital Expenditure (CAPEX)") |> 
+  filter(Batch_Number != "Batch 3")
+
+# Convert relevant columns to appropriate data types
+df$Date.of.Transaction <- as.Date(df$Date.of.Transaction, format="%Y-%m-%d")
+df$Quantity <- as.numeric(df$Quantity)
+df$Amount_UGX <- as.numeric(df$Amount_UGX)
+
+```
+
+# Batch 4
+
+```{r}
+
+
+# Creating a function that takes in 3 inputs; data, batch_num and num_birds to derive key metrics
+
+jc_dashboard_kpis <- function(data, batch_num, num_birds) {
+  
+  # 1st KPI - Total Revenues
+  
+  # Filter data for selected batch only
+  
+  filtered_data <- data |> 
+    filter(Batch_Number == batch_num) |> 
+    
+    # Filter for Revenue only
+    filter(Select.Account.Type == "Revenues")
+  
+  # Revenues by Batch Number
+  revenues_by_batch <- filtered_data %>%
+  group_by(Batch_Number) %>%
+  summarise(Total_Revenue = sum(Amount_UGX, na.rm = TRUE))
+  
+  print(revenues_by_batch)
+
+  #return(revenues_by_batch)
+  
+}
+
+jc_dashboard_kpis(df,"Batch 4")
+
+# Start from here next time after reading up a little more on the different types of functions and R shiny
+
+```
+
+# Batch 5
+
+....
+
+# Batch 6
+
+..
+
+# Batch 7
