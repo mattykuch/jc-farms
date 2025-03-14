@@ -59,29 +59,32 @@ df$Amount_UGX <- as.numeric(df$Amount_UGX)
 # Calling a function, we created, that takes in 3 inputs; data, batch_num and num_birds to derive key metrics
 #| title: Key Performance Metrics
 
-kpis <- jc_dashboard_kpis(df,"Batch 4",247)
-
+kpis4 <- jc_dashboard_kpis(df,"Batch 4",247)
 
 value_box(
   title = "Revenue",
-  value = kpis[1],
+  value = kpis4[1],
   showcase = bsicons::bs_icon("bank2"),
   theme = "primary"
 )
 
 value_box(
   title = "Cost of Production",
-  value = kpis[2],
+  value = kpis4[2],
   showcase = bsicons::bs_icon("twitter"),
   theme = "pink"
 )
 
 value_box(
   title = "Net Profit",
-  value = kpis[3],
+  value = kpis4[3],
   showcase = bsicons::bs_icon("cash"),
   theme = "primary"
 )
+  
+
+
+
 
 # Start from here next time after reading up a little more on the different types of functions and R shiny
 
@@ -92,28 +95,99 @@ value_box(
 ```{r}
 value_box(
   title = "Cost per Bird",
-  value = kpis[4],
+  value = kpis4[4],
   showcase = bsicons::bs_icon("twitter"),
   theme = "pink"
 )
 
 value_box(
   title = "Profit per Bird",
-  value = kpis[5],
+  value = kpis4[5],
   showcase = bsicons::bs_icon("cash"),
   theme = "primary"
 )
 ```
 
 # Batch 5
+```{r}
+kpis5 <- jc_dashboard_kpis(df,"Batch 5",197)
 
-....
+
+value_box(
+  title = "Cost of Production",
+  value = kpis5[1],
+  showcase = bsicons::bs_icon("twitter"),
+  theme = "pink"
+)
+
+
+```
+
+
+## Per Bird
+```{r}
+value_box(
+  title = "Cost per Bird",
+  value = kpis5[2],
+  showcase = bsicons::bs_icon("twitter"),
+  theme = "pink"
+)
+
+```
+
 
 # Batch 6
+```{r}
+kpis6 <- jc_dashboard_kpis(df,"Batch 6",347)
 
-..
+
+value_box(
+  title = "Cost of Production",
+  value = kpis6[1],
+  showcase = bsicons::bs_icon("twitter"),
+  theme = "pink"
+)
+
+```
+
+
+## Per Bird
+```{r}
+value_box(
+  title = "Cost per Bird",
+  value = kpis6[2],
+  showcase = bsicons::bs_icon("twitter"),
+  theme = "pink"
+)
+```
+
 
 # Batch 7
+```{r}
+kpis7 <- jc_dashboard_kpis(df,"Batch 7",347)
+
+
+value_box(
+  title = "Cost of Production",
+  value = kpis7[1],
+  showcase = bsicons::bs_icon("twitter"),
+  theme = "pink"
+)
+```
+
+
+## Per Bird
+```{r}
+value_box(
+  title = "Cost per Bird",
+  value = kpis7[2],
+  showcase = bsicons::bs_icon("twitter"),
+  theme = "pink"
+)
+
+```
+
+
 
 # Data
 
