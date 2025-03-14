@@ -1,5 +1,5 @@
 ---
-title: "jc-poultry-farm"
+title: "JC Poultry Farm Dashboard"
 format: dashboard
 editor: visual
 ---
@@ -14,13 +14,19 @@ library(tidyverse)
 library(lubridate)
 library(highcharter)
 library(DT)
+library(bslib)
+library(bsicons)
+library(shiny)
+
+# Source functions
+source(file="./R-scripts/00-functions.R")
 
 # -----------------------------------------------------------
 # 1. Read CSV data
 #    
 # -----------------------------------------------------------
 df_raw <- read.csv(
-  file = "./data/jc_farms_transaction_data_20250312.csv",
+  file = "./data/jc_farms_transaction_data_20250314.csv",
   stringsAsFactors = FALSE
 )
 
@@ -29,11 +35,12 @@ df_raw <- read.csv(
 # -----------------------------------------------------------
 # Sometimes R automatically converts special characters (spaces, parentheses).
 # If your 'Amount (UGX)' column is not easy to reference, rename it:
-df <- df_raw %>%
+
+df <- df_raw |> 
   rename(
     Amount_UGX = `Amount..UGX.`,
     Batch_Number = `Select.Batch.Number`
-  ) %>%
+  ) |> 
   filter( Select.Account.Type != "Capital Expenditure (CAPEX)") |> 
   filter(Batch_Number != "Batch 3")
 
@@ -46,38 +53,56 @@ df$Amount_UGX <- as.numeric(df$Amount_UGX)
 
 # Batch 4
 
+## Key Performance Metrics
+
 ```{r}
+# Calling a function, we created, that takes in 3 inputs; data, batch_num and num_birds to derive key metrics
+#| title: Key Performance Metrics
+
+kpis <- jc_dashboard_kpis(df,"Batch 4",247)
 
 
-# Creating a function that takes in 3 inputs; data, batch_num and num_birds to derive key metrics
+value_box(
+  title = "Revenue",
+  value = kpis[1],
+  showcase = bsicons::bs_icon("bank2"),
+  theme = "primary"
+)
 
-jc_dashboard_kpis <- function(data, batch_num, num_birds) {
-  
-  # 1st KPI - Total Revenues
-  
-  # Filter data for selected batch only
-  
-  filtered_data <- data |> 
-    filter(Batch_Number == batch_num) |> 
-    
-    # Filter for Revenue only
-    filter(Select.Account.Type == "Revenues")
-  
-  # Revenues by Batch Number
-  revenues_by_batch <- filtered_data %>%
-  group_by(Batch_Number) %>%
-  summarise(Total_Revenue = sum(Amount_UGX, na.rm = TRUE))
-  
-  print(revenues_by_batch)
+value_box(
+  title = "Cost of Production",
+  value = kpis[2],
+  showcase = bsicons::bs_icon("twitter"),
+  theme = "pink"
+)
 
-  #return(revenues_by_batch)
-  
-}
-
-jc_dashboard_kpis(df,"Batch 4")
+value_box(
+  title = "Net Profit",
+  value = kpis[3],
+  showcase = bsicons::bs_icon("cash"),
+  theme = "primary"
+)
 
 # Start from here next time after reading up a little more on the different types of functions and R shiny
 
+```
+
+## Per  Bird
+
+```{r}
+value_box(
+  title = "Cost per Bird",
+  value = kpis[4],
+  showcase = bsicons::bs_icon("twitter"),
+  theme = "pink"
+)
+
+value_box(
+  title = "Profit per Bird",
+  value = kpis[5],
+  showcase = bsicons::bs_icon("cash"),
+  theme = "primary"
+)
 ```
 
 # Batch 5
@@ -89,3 +114,15 @@ jc_dashboard_kpis(df,"Batch 4")
 ..
 
 # Batch 7
+
+# Data
+
+```{r}
+
+#| title: Batch Data Table 
+
+batch_data <- df |>
+  select(-c("Record.Start.Time","Record.End.Time"))
+
+datatable(batch_data, filter = "top")
+```
