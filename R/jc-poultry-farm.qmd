@@ -26,7 +26,7 @@ source(file="./R-scripts/00-functions.R")
 #    
 # -----------------------------------------------------------
 df_raw <- read.csv(
-  file = "./data/jc_farms_transaction_data_20250314.csv",
+  file = "./data/jc_farms_transaction_data_20250316.csv",
   stringsAsFactors = FALSE
 )
 
@@ -59,7 +59,7 @@ df$Amount_UGX <- as.numeric(df$Amount_UGX)
 # Calling a function, we created, that takes in 3 inputs; data, batch_num and num_birds to derive key metrics
 #| title: Key Performance Metrics
 
-kpis4 <- jc_dashboard_kpis(df,"Batch 4",247)
+kpis4 <- jc_dashboard_kpis(df,"Batch 4",246)
 
 value_box(
   title = "Revenue",
