@@ -26,7 +26,7 @@ source(file="./R-scripts/00-functions.R")
 #    
 # -----------------------------------------------------------
 df_raw <- read.csv(
-  file = "./data/jc_farms_transaction_data_v2_20250316.csv",
+  file = "./data/jc_farms_transaction_data_20250317.csv",
   stringsAsFactors = FALSE
 )
 
@@ -59,7 +59,7 @@ df$Amount_UGX <- as.numeric(df$Amount_UGX)
 # Calling a function, we created, that takes in 3 inputs; data, batch_num and num_birds to derive key metrics
 #| title: Key Performance Metrics
 
-kpis4 <- jc_dashboard_kpis(df,"Batch 4",246)
+kpis4 <- jc_dashboard_kpis(df,"Batch 4",245)
 
 value_box(
   title = "Revenue",
@@ -115,7 +115,7 @@ kpis5 <- jc_dashboard_kpis(df,"Batch 5",200)
 
 value_box(
   title = "Cost of Production",
-  value = kpis5[1],
+  value = kpis5[2],
   showcase = bsicons::bs_icon("twitter"),
   theme = "pink"
 )
@@ -128,7 +128,7 @@ value_box(
 ```{r}
 value_box(
   title = "Cost per Bird",
-  value = kpis5[2],
+  value = kpis5[4],
   showcase = bsicons::bs_icon("twitter"),
   theme = "pink"
 )
@@ -143,7 +143,7 @@ kpis6 <- jc_dashboard_kpis(df,"Batch 6",346)
 
 value_box(
   title = "Cost of Production",
-  value = kpis6[1],
+  value = kpis6[2],
   showcase = bsicons::bs_icon("twitter"),
   theme = "pink"
 )
@@ -155,7 +155,7 @@ value_box(
 ```{r}
 value_box(
   title = "Cost per Bird",
-  value = kpis6[2],
+  value = kpis6[4],
   showcase = bsicons::bs_icon("twitter"),
   theme = "pink"
 )
