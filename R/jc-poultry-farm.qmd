@@ -26,7 +26,7 @@ source(file="./R-scripts/00-functions.R")
 #    
 # -----------------------------------------------------------
 df_raw <- read.csv(
-  file = "./data/jc_farms_transaction_data_20250317.csv",
+  file = "./data/jc_farms_transaction_data_20250318.csv",
   stringsAsFactors = FALSE
 )
 
@@ -61,32 +61,34 @@ df$Amount_UGX <- as.numeric(df$Amount_UGX)
 
 kpis4 <- jc_dashboard_kpis(df,"Batch 4",245)
 
+vbs4 <- list(
 value_box(
   title = "Revenue",
-  value = kpis4[1],
+  value = tags$p(kpis4[1], style = "font-size: 150%;"),
   showcase = bsicons::bs_icon("bank2"),
   theme = "primary"
-)
+),
 
 value_box(
   title = "Cost of Production",
-  value = kpis4[2],
+  value = tags$p(kpis4[2], style = "font-size: 150%;"),
   showcase = bsicons::bs_icon("twitter"),
   theme = "pink"
-)
+),
 
 value_box(
   title = "Net Profit",
-  value = kpis4[3],
+  value = tags$p(kpis4[3], style = "font-size: 150%;"),
   showcase = bsicons::bs_icon("cash"),
   theme = "primary"
 )
-  
+)
 
+layout_column_wrap(
+  width = "250px",
+  !!!vbs4
+)
 
-
-
-# Start from here next time after reading up a little more on the different types of functions and R shiny
 
 ```
 
@@ -95,14 +97,14 @@ value_box(
 ```{r}
 value_box(
   title = "Cost per Bird",
-  value = kpis4[4],
+  value = tags$p(kpis4[4], style = "font-size: 150%;"),
   showcase = bsicons::bs_icon("twitter"),
   theme = "pink"
 )
 
 value_box(
   title = "Profit per Bird",
-  value = kpis4[5],
+  value = tags$p(kpis4[5], style = "font-size: 150%;"),
   showcase = bsicons::bs_icon("cash"),
   theme = "primary"
 )
@@ -113,11 +115,32 @@ value_box(
 kpis5 <- jc_dashboard_kpis(df,"Batch 5",200)
 
 
+vbs5 <- list(
+value_box(
+  title = "Revenue",
+  value = tags$p(kpis5[1], style = "font-size: 150%;"),
+  showcase = bsicons::bs_icon("bank2"),
+  theme = "primary"
+),
+
 value_box(
   title = "Cost of Production",
-  value = kpis5[2],
+  value = tags$p(kpis5[2], style = "font-size: 150%;"),
   showcase = bsicons::bs_icon("twitter"),
   theme = "pink"
+),
+
+value_box(
+  title = "Net Profit",
+  value = tags$p(kpis5[3], style = "font-size: 150%;"),
+  showcase = bsicons::bs_icon("cash"),
+  theme = "primary"
+)
+)
+
+layout_column_wrap(
+  width = "250px",
+  !!!vbs5
 )
 
 
@@ -126,11 +149,19 @@ value_box(
 
 ## Per Bird
 ```{r}
+
 value_box(
   title = "Cost per Bird",
-  value = kpis5[4],
+  value = tags$p(kpis5[4], style = "font-size: 150%;"),
   showcase = bsicons::bs_icon("twitter"),
   theme = "pink"
+)
+
+value_box(
+  title = "Profit per Bird",
+  value = tags$p(kpis5[5], style = "font-size: 150%;"),
+  showcase = bsicons::bs_icon("cash"),
+  theme = "primary"
 )
 
 ```
@@ -140,12 +171,32 @@ value_box(
 ```{r}
 kpis6 <- jc_dashboard_kpis(df,"Batch 6",346)
 
+vbs6 <- list(
+value_box(
+  title = "Revenue",
+  value = tags$p(kpis6[1], style = "font-size: 150%;"),
+  showcase = bsicons::bs_icon("bank2"),
+  theme = "primary"
+),
 
 value_box(
   title = "Cost of Production",
-  value = kpis6[2],
+  value = tags$p(kpis6[2], style = "font-size: 150%;"),
   showcase = bsicons::bs_icon("twitter"),
   theme = "pink"
+),
+
+value_box(
+  title = "Net Profit",
+  value = tags$p(kpis6[3], style = "font-size: 150%;"),
+  showcase = bsicons::bs_icon("cash"),
+  theme = "primary"
+)
+)
+
+layout_column_wrap(
+  width = "250px",
+  !!!vbs6
 )
 
 ```
@@ -155,10 +206,18 @@ value_box(
 ```{r}
 value_box(
   title = "Cost per Bird",
-  value = kpis6[4],
+  value = tags$p(kpis6[4], style = "font-size: 150%;"),
   showcase = bsicons::bs_icon("twitter"),
   theme = "pink"
 )
+
+value_box(
+  title = "Profit per Bird",
+  value = tags$p(kpis6[5], style = "font-size: 150%;"),
+  showcase = bsicons::bs_icon("cash"),
+  theme = "primary"
+)
+
 ```
 
 
