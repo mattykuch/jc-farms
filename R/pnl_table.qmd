@@ -367,3 +367,146 @@ jc_poultry_table
 
 
 ```
+
+# Table 3
+
+...
+
+```{r}
+# JC Poultry Farm - Profit & Loss Income Statement with GT Formatting
+
+# Load required libraries
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(gt)
+library(gtExtras)
+library(scales)
+
+# Read the Excel file
+pl_data <- read_excel("data/JC Poultry Farm - Business Operating Model_v1_250323.xlsx", 
+                      sheet = "P + L  Income Statement",
+                      skip = 3)  # Skip the first 3 rows to get to the data
+
+# Clean and transform the data
+pl_statement <- pl_data %>%
+  # Remove any NA rows
+  filter(!is.na(`Category`)) %>%
+  # Rename columns for clarity
+  rename(
+    category = `Category`,
+    description = `Description`,
+    period1_amount = `Amount (UGX)...3`,
+    period2_amount = `Amount (UGX)...4`,
+    period3_amount = `Amount (UGX)...5`
+  ) %>%
+  # Select only the relevant columns
+  select(category, description, period1_amount, period2_amount, period3_amount)
+
+# Function to create GT table
+create_pl_gt_table <- function(pl_data) {
+  # Calculate total revenues and COGS
+  revenues <- pl_data %>% 
+    filter(category == "Revenues") %>%
+    mutate(
+      period1_total = sum(period1_amount),
+      period2_total = sum(period2_amount),
+      period3_total = sum(period3_amount)
+    )
+  
+  cogs <- pl_data %>% 
+    filter(category == "Cost of Goods Sold (COGS)") %>%
+    mutate(
+      period1_total = sum(period1_amount),
+      period2_total = sum(period2_amount),
+      period3_total = sum(period3_amount)
+    )
+  
+  # Prepare data for GT table
+  gt_data <- bind_rows(
+    revenues %>% 
+      mutate(row_group = "Revenues") %>%
+      select(row_group, description, period1_amount, period2_amount, period3_amount),
+    tibble(
+      row_group = "Total Revenues",
+      description = "Total Revenues",
+      period1_amount = revenues$period1_total,
+      period2_amount = revenues$period2_total,
+      period3_amount = revenues$period3_total
+    ),
+    tibble(row_group = "", description = "", period1_amount = NA, period2_amount = NA, period3_amount = NA),
+    cogs %>% 
+      mutate(row_group = "Cost of Goods Sold (COGS)") %>%
+      select(row_group, description, period1_amount, period2_amount, period3_amount),
+    tibble(
+      row_group = "Total COGS",
+      description = "Total Cost of Goods Sold",
+      period1_amount = cogs$period1_total,
+      period2_amount = cogs$period2_total,
+      period3_amount = cogs$period3_total
+    ),
+    tibble(row_group = "", description = "", period1_amount = NA, period2_amount = NA, period3_amount = NA),
+    tibble(
+      row_group = "Gross Profit",
+      description = "Gross Profit",
+      period1_amount = revenues$period1_total - cogs$period1_total,
+      period2_amount = revenues$period2_total - cogs$period2_total,
+      period3_amount = revenues$period3_total - cogs$period3_total
+    )
+  )
+  
+  # Create GT table
+  gt_table <- gt_data %>%
+    gt(groupname_col = "row_group") %>%
+    fmt_currency(
+      columns = c(period1_amount, period2_amount, period3_amount),
+      currency = "UGX"
+    ) %>%
+    tab_header(
+      title = "JC Poultry Farm - Profit & Loss Statement",
+      subtitle = "Financial Performance Across Three Periods"
+    ) %>%
+    tab_style(
+      style = cell_text(weight = "bold"),
+      locations = cells_row_groups()
+    ) %>%
+    tab_style(
+      style = cell_text(style = "italic"),
+      locations = cells_body(columns = description)
+    ) %>%
+    cols_label(
+      description = "Description",
+      period1_amount = "Period 1",
+      period2_amount = "Period 2", 
+      period3_amount = "Period 3"
+    ) %>%
+    tab_style(
+      style = list(
+        cell_fill(color = "#F0F0F0"),
+        cell_text(weight = "bold")
+      ),
+      locations = cells_body(rows = description %in% c("Total Revenues", "Total Cost of Goods Sold", "Gross Profit"))
+    ) %>%
+    gt_theme_espn() %>%
+    opt_table_font(
+      font = "Arial"
+    ) %>%
+    tab_options(
+      table.font.size = 12,
+      heading.title.font.size = 16,
+      heading.subtitle.font.size = 14
+    )
+  
+  return(gt_table)
+}
+
+# Create and display the GT table
+pl_gt_table <- create_pl_gt_table(pl_statement)
+
+# Save the table as an HTML file (optional)
+gtsave(pl_gt_table, filename = "jc_poultry_farm_pl_statement.html")
+
+
+```
+
+![PnL Table 3](jc_pnl_table3.jpg)
