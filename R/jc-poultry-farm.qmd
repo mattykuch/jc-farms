@@ -17,6 +17,12 @@ library(DT)
 library(bslib)
 library(bsicons)
 library(shiny)
+library(gt)
+library(glue)
+library(gtExtras)
+library(kableExtra)
+library(readxl)
+library(scales)
 
 # Source functions
 source(file="./R-scripts/00-functions.R")
@@ -26,7 +32,7 @@ source(file="./R-scripts/00-functions.R")
 #    
 # -----------------------------------------------------------
 df_raw <- read.csv(
-  file = "./data/jc_farms_transaction_data_20250325.csv",
+  file = "./data/jc_farms_transaction_data_20250326.csv",
   stringsAsFactors = FALSE
 )
 
@@ -112,7 +118,7 @@ value_box(
 
 # Batch 5
 ```{r}
-kpis5 <- jc_dashboard_kpis(df,"Batch 5",200)
+kpis5 <- jc_dashboard_kpis(df,"Batch 5",198)
 
 
 vbs5 <- list(
@@ -169,7 +175,7 @@ value_box(
 
 # Batch 6
 ```{r}
-kpis6 <- jc_dashboard_kpis(df,"Batch 6",346)
+kpis6 <- jc_dashboard_kpis(df,"Batch 6",342)
 
 vbs6 <- list(
 value_box(
@@ -246,6 +252,61 @@ value_box(
 
 ```
 
+# Batch 8
+```{r}
+
+kpis8 <- jc_dashboard_kpis(df,"Batch 8",300)
+
+
+value_box(
+  title = "Cost of Production",
+  value = kpis8[1],
+  showcase = bsicons::bs_icon("twitter"),
+  theme = "pink"
+)
+
+```
+
+
+
+## Per Bird
+```{r}
+
+value_box(
+  title = "Cost per Bird",
+  value = kpis8[2],
+  showcase = bsicons::bs_icon("twitter"),
+  theme = "pink"
+)
+```
+
+
+
+# Profit / Loss Statement Table
+```{r}
+# Read the Excel file
+
+pnl_data <- read_excel("data/JC Poultry Farm - Business Operating Model_v1_250323.xlsx", 
+                      sheet = "PnL",
+                      skip = 3)  # Skip the first 3 rows to get to the data
+
+# Clean and transform the data
+pnl_statement <- pnl_data %>%
+  # Remove any NA rows
+  filter(!is.na(`Category`)) %>%
+  # Rename columns for clarity
+  rename(
+    Category = `Category`,
+    description = `Description`,
+    Batch_1 = `Amount (UGX)...3`,
+    Batch_2 = `Amount (UGX)...4`,
+    Batch_3 = `Amount (UGX)...5`
+  ) %>%
+  # Select only the relevant columns
+  select(Category, Batch_1, Batch_2, Batch_3)
+
+datatable(pnl_statement, filter = "top")
+```
 
 
 # Data
