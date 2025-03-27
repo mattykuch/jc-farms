@@ -23,6 +23,7 @@ library(gtExtras)
 library(kableExtra)
 library(readxl)
 library(scales)
+library(formattable)
 
 # Source functions
 source(file="./R-scripts/00-functions.R")
@@ -282,7 +283,7 @@ value_box(
 
 
 
-# Profit / Loss Statement Table
+# Profit / Loss Statement
 ```{r}
 # Read the Excel file
 
@@ -305,7 +306,18 @@ pnl_statement <- pnl_data %>%
   # Select only the relevant columns
   select(Category, Batch_1, Batch_2, Batch_3)
 
-datatable(pnl_statement, filter = "top")
+pnl_statement$Batch_1 <- currency(pnl_statement$Batch_1, symbol = "", digits = 0L)
+pnl_statement$Batch_2 <- currency(pnl_statement$Batch_2, symbol = "", digits = 0L)
+pnl_statement$Batch_3 <- currency(pnl_statement$Batch_3, symbol = "", digits = 0L)
+
+pnl_statement |> 
+  kbl(caption = "JC Farms Profit/Loss Statement") |>
+  kable_paper("striped", full_width = F) %>%
+  add_indent(c(2, 4, 5,6,7,9,10,11,12,13)) |> 
+  row_spec(c(1,3,8,14), bold = T, color = "white", background = "#4287f5") 
+  
+
+
 ```
 
 
