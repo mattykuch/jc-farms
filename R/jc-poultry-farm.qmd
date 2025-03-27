@@ -32,7 +32,7 @@ source(file="./R-scripts/00-functions.R")
 #    
 # -----------------------------------------------------------
 df_raw <- read.csv(
-  file = "./data/jc_farms_transaction_data_20250326.csv",
+  file = "./data/jc_farms_transaction_data_20250327_v2.csv",
   stringsAsFactors = FALSE
 )
 
@@ -118,7 +118,7 @@ value_box(
 
 # Batch 5
 ```{r}
-kpis5 <- jc_dashboard_kpis(df,"Batch 5",198)
+kpis5 <- jc_dashboard_kpis(df,"Batch 5",199)
 
 
 vbs5 <- list(
@@ -175,7 +175,7 @@ value_box(
 
 # Batch 6
 ```{r}
-kpis6 <- jc_dashboard_kpis(df,"Batch 6",342)
+kpis6 <- jc_dashboard_kpis(df,"Batch 6",343)
 
 vbs6 <- list(
 value_box(
