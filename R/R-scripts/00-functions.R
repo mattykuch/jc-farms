@@ -73,3 +73,71 @@ jc_dashboard_kpis <- function(data, batch_num, num_birds) {
   kpi_list
   
 }
+
+jc_pnl_by_batch <- function(data, batch_num) {
+  
+  # Read CSV data
+  transactions <- data
+  
+  # Filter and aggregate Batch_4 data
+  batch <- transactions %>%
+    filter(Select.Batch.Number == batch_num) %>%
+    mutate(
+      Category = case_when(
+        Select.Account.Type == "Revenues" ~ Select.Category.3,
+        Select.Account.Type == "Cost of Goods Sold (COGS)" ~ Select.Category.2,
+        Select.Account.Type == "Operating Expenditure (OPEX)" ~ Select.Category.1,
+        TRUE ~ NA_character_
+      ),
+      Amount = as.numeric(gsub(",", "", Amount..UGX.))
+    ) %>%
+    filter(!is.na(Category)) %>%
+    group_by(Category) %>%
+    summarise(Batch_X = sum(Amount, na.rm = TRUE))
+  
+  #Sub-setting the 1 cell I want to change
+  batch$Category[5] <- "Sales Revenue"
+  
+  # Create full category structure
+  categories <- data.frame(
+    Category = c(
+      "Revenues", "Sales Revenue", "Cost of Goods Sold (COGS)", "Feed Costs",
+      "Veterinary Supplies", "Chicks Purchased", "Other Direct Costs",
+      "Operating Expenses (OPEX)", "Salaries and Wages", "Utilities (Electricity, Water, etc.)",
+      "Transportation Costs", "Marketing Expenses", "Other Operating Expenses",
+      "Net Profit/Loss"
+    )
+  )
+  
+  # Merge with categories and fill missing values
+  
+  batch_full <- categories %>%
+    left_join(batch, by = "Category") %>%
+    mutate(Batch_X = coalesce(Batch_X, 0)) %>%
+    # Calculate totals
+    mutate(Batch_X = case_when(
+      Category == "Revenues" ~ sum(Batch_X[Category == "Sales Revenue"]),
+      Category == "Cost of Goods Sold (COGS)" ~ sum(Batch_X[Category %in% c("Feed Costs", "Veterinary Supplies", "Chicks Purchased", "Other Direct Costs")]),
+      Category == "Operating Expenses (OPEX)" ~ sum(Batch_X[Category %in% c("Salaries and Wages", "Utilities (Electricity, Water, etc.)", "Transportation Costs", "Marketing Expenses", "Other Operating Expenses")]),
+      TRUE ~ Batch_X
+    ))
+  
+  # Calculate Net Profit/Loss
+  
+  batch_full <- batch_full |> 
+    mutate(
+      Batch_X = ifelse(
+        Category == "Net Profit/Loss",
+        Batch_X[Category == "Revenues"] - 
+          (Batch_X[Category == "Cost of Goods Sold (COGS)"] + 
+             Batch_X[Category == "Operating Expenses (OPEX)"]),
+        Batch_X
+      )
+    )
+  
+  colnames(batch_full)[2] <- batch_num
+  
+  batch_full
+  
+  
+}

@@ -33,7 +33,7 @@ source(file="./R-scripts/00-functions.R")
 #    
 # -----------------------------------------------------------
 df_raw <- read.csv(
-  file = "./data/jc_farms_transaction_data_20250327_v2.csv",
+  file = "./data/jc_farms_transaction_data_20250328.csv",
   stringsAsFactors = FALSE
 )
 
@@ -119,7 +119,7 @@ value_box(
 
 # Batch 5
 ```{r}
-kpis5 <- jc_dashboard_kpis(df,"Batch 5",199)
+kpis5 <- jc_dashboard_kpis(df,"Batch 5",200)
 
 
 vbs5 <- list(
@@ -176,7 +176,7 @@ value_box(
 
 # Batch 6
 ```{r}
-kpis6 <- jc_dashboard_kpis(df,"Batch 6",343)
+kpis6 <- jc_dashboard_kpis(df,"Batch 6",346)
 
 vbs6 <- list(
 value_box(
@@ -230,7 +230,7 @@ value_box(
 
 # Batch 7
 ```{r}
-kpis7 <- jc_dashboard_kpis(df,"Batch 7",347)
+kpis7 <- jc_dashboard_kpis(df,"Batch 7",344)
 
 
 value_box(
@@ -299,77 +299,26 @@ pnl_statement <- pnl_data %>%
   rename(
     Category = `Category`,
     description = `Description`,
-    Batch_1 = `Amount (UGX)...3`,
-    Batch_2 = `Amount (UGX)...4`,
-    Batch_3 = `Amount (UGX)...5`
+    "Batch 1" = `Amount (UGX)...3`,
+    "Batch 2" = `Amount (UGX)...4`,
+    "Batch 3" = `Amount (UGX)...5`
   ) %>%
   # Select only the relevant columns
-  select(Category, Batch_1, Batch_2, Batch_3)
+  select(Category, "Batch 1", "Batch 2", "Batch 3")
 
-# Get Batch 4 data
+# Get Batch 4, 5 and 6 dataframes 
 
-# Read CSV data
-transactions <- read.csv("data/jc_farms_transaction_data_20250327_v2.csv")
+batch4_full <- jc_pnl_by_batch(df_raw,"Batch 4")
 
-# Filter and aggregate Batch_4 data
-batch4 <- transactions %>%
-  filter(Select.Batch.Number == "Batch 4") %>%
-  mutate(
-    Category = case_when(
-      Select.Account.Type == "Revenues" ~ Select.Category.3,
-      Select.Account.Type == "Cost of Goods Sold (COGS)" ~ Select.Category.2,
-      Select.Account.Type == "Operating Expenditure (OPEX)" ~ Select.Category.1,
-      TRUE ~ NA_character_
-    ),
-    Amount = as.numeric(gsub(",", "", Amount..UGX.))
-  ) %>%
-  filter(!is.na(Category)) %>%
-  group_by(Category) %>%
-  summarise(Batch_4 = sum(Amount, na.rm = TRUE))
+batch5_full <- jc_pnl_by_batch(df_raw,"Batch 5")
 
-#Sub-setting the 1 cell I want to change
-batch4$Category[5] <- "Sales Revenue"
-
-# Create full category structure
-categories <- data.frame(
-  Category = c(
-    "Revenues", "Sales Revenue", "Cost of Goods Sold (COGS)", "Feed Costs",
-    "Veterinary Supplies", "Chicks Purchased", "Other Direct Costs",
-    "Operating Expenses (OPEX)", "Salaries and Wages", "Utilities (Electricity, Water, etc.)",
-    "Transportation Costs", "Marketing Expenses", "Other Operating Expenses",
-    "Net Profit/Loss"
-  )
-)
-
-# Merge with categories and fill missing values
-
-batch4_full <- categories %>%
-  left_join(batch4, by = "Category") %>%
-  mutate(Batch_4 = coalesce(Batch_4, 0)) %>%
-  # Calculate totals
-  mutate(Batch_4 = case_when(
-    Category == "Revenues" ~ sum(Batch_4[Category == "Sales Revenue"]),
-    Category == "Cost of Goods Sold (COGS)" ~ sum(Batch_4[Category %in% c("Feed Costs", "Veterinary Supplies", "Chicks Purchased", "Other Direct Costs")]),
-    Category == "Operating Expenses (OPEX)" ~ sum(Batch_4[Category %in% c("Salaries and Wages", "Utilities (Electricity, Water, etc.)", "Transportation Costs", "Marketing Expenses", "Other Operating Expenses")]),
-    TRUE ~ Batch_4
-  ))
-
-# Calculate Net Profit/Loss
-
-batch4_full <- batch4_full |> 
-  mutate(
-    Batch_4 = ifelse(
-      Category == "Net Profit/Loss",
-      Batch_4[Category == "Revenues"] - 
-        (Batch_4[Category == "Cost of Goods Sold (COGS)"] + 
-           Batch_4[Category == "Operating Expenses (OPEX)"]),
-      Batch_4
-    )
-  )
+batch6_full <- jc_pnl_by_batch(df_raw,"Batch 6")
 
 # Merge with original PnL
 final_pnl <- pnl_statement %>%
-  left_join(batch4_full, by = "Category")
+  left_join(batch4_full, by = "Category") |> 
+  left_join(batch5_full, by = "Category") |> 
+  left_join(batch6_full, by = "Category")
 
 # Format numbers with commas
 final_pnl <- final_pnl %>%
@@ -380,6 +329,8 @@ final_pnl |>
   kable_paper("striped", full_width = F) %>%
   add_indent(c(2, 4, 5,6,7,9,10,11,12,13)) |> 
   row_spec(c(1,3,8,14), bold = T, color = "white", background = "#4287f5") 
+
+
   
 
 
