@@ -84,7 +84,7 @@ jc_pnl_by_batch <- function(data, batch_num) {
     filter(batch == batch_num) %>%
     mutate(
       Category = case_when(
-        account_type == "revenues_sales" ~ category_revenues,
+        account_type == "revenues" ~ category_revenues,
         account_type == "cogs" ~ category_cogs,
         account_type == "opex" ~ category_opex,
         TRUE ~ NA_character_
@@ -95,8 +95,20 @@ jc_pnl_by_batch <- function(data, batch_num) {
     group_by(Category) %>%
     summarise(Batch_X = sum(Amount, na.rm = TRUE))
   
-  #Sub-setting the 1 cell I want to change
-  batch$Category[5] <- "Sales Revenue"
+  category_mapping <- c(
+    "cogs_chicks_purchased" = "Chicks Purchased",
+    "cogs_feeds" = "Feed Costs",
+    "cogs_vet" = "Veterinary Supplies",
+    "opex_other" = "Other Operating Expenses",
+    "opex_salaries_wages" = "Salaries and Wages",
+    "opex_transport" = "Transportation Costs",
+    "opex_utilities" = "Utilities (Electricity, Water, etc.)",
+    "revenues_sales" = "Sales Revenue"
+  )
+  
+  # Apply the mapping to the entire column at once
+  batch$Category <- category_mapping[batch$Category]
+  
   
   # Create full category structure
   categories <- data.frame(
@@ -135,7 +147,7 @@ jc_pnl_by_batch <- function(data, batch_num) {
       )
     )
   
-  colnames(batch_full)[2] <- batch_num
+  colnames(batch_full)[2] <- paste("Batch",batch_num)
   
   batch_full
   

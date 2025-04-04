@@ -4,7 +4,7 @@ format: dashboard
 editor: visual
 ---
 
-```{r warning=FALSE, message=FALSE }
+```{r warning=FALSE, message=FALSE, echo=FALSE}
 
 # -----------------------------------------------------------
 # Load libraries
@@ -24,6 +24,7 @@ library(kableExtra)
 library(readxl)
 library(scales)
 library(formattable)
+library(robotoolbox)
 
 # Source functions
 source(file="./R-scripts/00-functions.R")
@@ -33,13 +34,30 @@ source(file="./R-scripts/00-functions.R")
 #    
 # -----------------------------------------------------------
 
+## The first step is to get your API token from your Kobotoolbox account
 
 
+mytoken <- "07cdf3134d0f4352b54cf83edaa59101bc02990e"
 
-df_raw <- read.csv(
-  file = "./data/jc_farms_transaction_data_20250403.csv",
-  stringsAsFactors = FALSE
-)
+
+## With the token you can now setup the robotoolbox package.
+
+kobo_setup(url = "https://kf.kobotoolbox.org/", token = mytoken)
+
+# Now you can access all your projects and read the data from the project you picked. 
+# You can list project using kobo_asset_list().
+
+my_projects_list <- kobo_asset_list()
+
+# Let’s pick the second project and load it
+
+uid <- my_projects_list$uid[2]
+
+# Initialize it as an asset
+asset <- kobo_asset(uid)
+
+# With the asset you can now read your data
+df_raw <- kobo_data(asset)
 
 # -----------------------------------------------------------
 # 2. (Optional) Clean or rename columns for easier reference
@@ -49,16 +67,12 @@ df_raw <- read.csv(
 
 df <- df_raw |> 
   rename(
-    Amount_UGX = `Amount..UGX.`,
-    Batch_Number = `Select.Batch.Number`
+    Amount_UGX = amount_manual,
+    Batch_Number = batch
   ) |> 
-  filter( Select.Account.Type != "Capital Expenditure (CAPEX)") |> 
-  filter(Batch_Number != "Batch 3")
+  filter( account_type != "capex") |> 
+  filter(Batch_Number != "3")
 
-# Convert relevant columns to appropriate data types
-df$Date.of.Transaction <- as.Date(df$Date.of.Transaction, format="%Y-%m-%d")
-df$Quantity <- as.numeric(df$Quantity)
-df$Amount_UGX <- as.numeric(df$Amount_UGX)
 
 ```
 
@@ -70,7 +84,7 @@ df$Amount_UGX <- as.numeric(df$Amount_UGX)
 # Calling a function, we created, that takes in 3 inputs; data, batch_num and num_birds to derive key metrics
 #| title: Key Performance Metrics
 
-kpis4 <- jc_dashboard_kpis(df,"Batch 4",245)
+kpis4 <- jc_dashboard_kpis(df,"4",245)
 
 vbs4 <- list(
 value_box(
@@ -123,7 +137,7 @@ value_box(
 
 # Batch 5
 ```{r}
-kpis5 <- jc_dashboard_kpis(df,"Batch 5",200)
+kpis5 <- jc_dashboard_kpis(df,"5",200)
 
 
 vbs5 <- list(
@@ -180,7 +194,7 @@ value_box(
 
 # Batch 6
 ```{r}
-kpis6 <- jc_dashboard_kpis(df,"Batch 6",346)
+kpis6 <- jc_dashboard_kpis(df,"6",346)
 
 vbs6 <- list(
 value_box(
@@ -234,7 +248,7 @@ value_box(
 
 # Batch 7
 ```{r}
-kpis7 <- jc_dashboard_kpis(df,"Batch 7",344)
+kpis7 <- jc_dashboard_kpis(df,"7",344)
 
 
 value_box(
@@ -260,7 +274,7 @@ value_box(
 # Batch 8
 ```{r}
 
-kpis8 <- jc_dashboard_kpis(df,"Batch 8",300)
+kpis8 <- jc_dashboard_kpis(df,"8",300)
 
 
 value_box(
@@ -312,11 +326,11 @@ pnl_statement <- pnl_data %>%
 
 # Get Batch 4, 5 and 6 dataframes 
 
-batch4_full <- jc_pnl_by_batch(df_raw,"Batch 4")
+batch4_full <- jc_pnl_by_batch(df_raw,"4")
 
-batch5_full <- jc_pnl_by_batch(df_raw,"Batch 5")
+batch5_full <- jc_pnl_by_batch(df_raw,"5")
 
-batch6_full <- jc_pnl_by_batch(df_raw,"Batch 6")
+batch6_full <- jc_pnl_by_batch(df_raw,"6")
 
 # Merge with original PnL
 final_pnl <- pnl_statement %>%
@@ -348,7 +362,7 @@ final_pnl |>
 #| title: Batch Data Table 
 
 batch_data <- df |>
-  select(-c("Record.Start.Time","Record.End.Time"))
+  select(-c("start","end"))
 
 datatable(batch_data, filter = "top")
 ```

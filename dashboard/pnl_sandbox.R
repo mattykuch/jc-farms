@@ -80,6 +80,26 @@ batch4_2 <- transact_data |>
     
   )
 
+# ALT approach - batch 5
+
+batch5 <- transact_data |> 
+  filter(batch == "5") |> 
+  mutate(
+    Category = case_when(
+      account_type == "revenues" ~ category_revenues,
+      account_type == "cogs" ~ category_cogs,
+      account_type == "opex" ~ category_opex,
+      TRUE ~ NA_character_
+    ),
+    Amount = as.numeric(gsub(",", "", amount_manual))
+  ) %>%
+  filter(!is.na(Category)) %>%
+  group_by(Category) %>%
+  summarise(Batch_5 = sum(Amount, na.rm = TRUE)
+            
+  )
+
+
 #Sub-setting the 1 cell I want to change
 batch4$Category[5] <- "Sales Revenue"
 
