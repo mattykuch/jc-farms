@@ -95,7 +95,7 @@ batch5 <- transact_data |>
   ) %>%
   filter(!is.na(Category)) %>%
   group_by(Category) %>%
-  summarise(Batch_5 = sum(Amount, na.rm = TRUE)
+  summarise(Batch_5 = sum(Amount, na.rm = FALSE)
             
   )
 
@@ -103,15 +103,20 @@ batch5 <- transact_data |>
 #Sub-setting the 1 cell I want to change
 batch4$Category[5] <- "Sales Revenue"
 
-#Sub-setting all  the cells I want to change
-batch4_2$Category[1] <- "Chicks Purchased"
-batch4_2$Category[2] <- "Feed Costs"
-batch4_2$Category[3] <- "Veterinary Supplies"
-batch4_2$Category[4] <- "Other Operating Expenses"
-batch4_2$Category[5] <- "Salaries and Wages"
-batch4_2$Category[6] <- "Transportation Costs"
-batch4_2$Category[7] <- "Utilities (Electricity, Water, etc.)"
-batch4_2$Category[8] <- "Sales Revenue"
+# Using a named vector with the match function
+category_mapping <- c(
+  "cogs_chicks_purchased" = "Chicks Purchased",
+  "cogs_feeds" = "Feed Costs",
+  "cogs_vet" = "Veterinary Supplies",
+  "opex_other" = "Other Operating Expenses",
+  "opex_salaries_wages" = "Salaries and Wages",
+  "opex_transport" = "Transportation Costs",
+  "opex_utilities" = "Utilities (Electricity, Water, etc.)",
+  "revenues_sales" = "Sales Revenue"
+)
+
+# Apply the mapping to the entire column at once
+batch4_2$Category <- category_mapping[batch4_2$Category]
 
 # Create full category structure
 categories <- data.frame(
