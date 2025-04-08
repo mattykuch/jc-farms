@@ -248,7 +248,7 @@ value_box(
 
 # Batch 7
 ```{r}
-kpis7 <- jc_dashboard_kpis(df,"7",341)
+kpis7 <- jc_dashboard_kpis(df,"7",339)
 
 
 value_box(
