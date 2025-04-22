@@ -133,7 +133,7 @@ value_box(
 
 # Batch 7
 ```{r}
-kpis7 <- jc_dashboard_kpis(df,"7",339)
+kpis7 <- jc_dashboard_kpis(df,"7",338)
 
 vbs7 <- list(
 value_box(
@@ -211,6 +211,34 @@ value_box(
   showcase = bsicons::bs_icon("twitter"),
   theme = "pink"
 )
+```
+
+# Batch 9
+
+```{r}
+kpis9 <- jc_dashboard_kpis(df,"9",584)
+
+
+value_box(
+  title = "Cost of Production",
+  value = kpis9[1],
+  showcase = bsicons::bs_icon("twitter"),
+  theme = "pink"
+)
+
+
+```
+
+## Per Bird
+
+```{r}
+value_box(
+  title = "Cost per Bird",
+  value = kpis9[2],
+  showcase = bsicons::bs_icon("twitter"),
+  theme = "pink"
+)
+
 ```
 
 
