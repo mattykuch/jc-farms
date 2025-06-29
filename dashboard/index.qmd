@@ -297,6 +297,135 @@ value_box(
 
 ```
 
+# Batch 10
+
+
+```{r}
+kpis10 <- jc_dashboard_kpis(df,"10",700)
+
+value_box(
+  title = "Cost of Production",
+  value = tags$p(kpis10[1], style = "font-size: 150%;"),
+  showcase = bsicons::bs_icon("twitter"),
+  theme = "pink"
+)
+
+#vbs10 <- list(
+#value_box(
+  #title = "Revenue",
+  #value = tags$p(kpis10[1], style = "font-size: 150%;"),
+  #showcase = bsicons::bs_icon("bank2"),
+  #theme = "primary"
+#),
+
+#value_box(
+  #title = "Cost of Production",
+  #value = tags$p(kpis10[2], style = "font-size: 150%;"),
+  #showcase = bsicons::bs_icon("twitter"),
+  #theme = "pink"
+#),
+
+#value_box(
+  #title = "Net Profit",
+  #value = tags$p(kpis10[3], style = "font-size: 150%;"),
+  #showcase = bsicons::bs_icon("cash"),
+  #theme = "primary"
+#)
+#)
+
+#layout_column_wrap(
+  #width = "250px",
+  #!!!vbs10
+#)
+
+
+
+```
+
+## Per Bird
+
+```{r}
+value_box(
+  title = "Cost per Bird",
+  value = tags$p(kpis10[2], style = "font-size: 150%;"),
+  showcase = bsicons::bs_icon("twitter"),
+  theme = "pink"
+)
+
+#value_box(
+  #title = "Profit per Bird",
+  #value = tags$p(kpis10[5], style = "font-size: 150%;"),
+  #showcase = bsicons::bs_icon("cash"),
+  #theme = "primary"
+#)
+
+```
+
+
+# Batch 11
+
+
+```{r}
+kpis11 <- jc_dashboard_kpis(df,"11",300)
+
+value_box(
+  title = "Cost of Production",
+  value = tags$p(kpis11[1], style = "font-size: 150%;"),
+  showcase = bsicons::bs_icon("twitter"),
+  theme = "pink"
+)
+
+#vbs11 <- list(
+#value_box(
+  #title = "Revenue",
+  #value = tags$p(kpis11[1], style = "font-size: 150%;"),
+  #showcase = bsicons::bs_icon("bank2"),
+  #theme = "primary"
+#),
+
+#value_box(
+  #title = "Cost of Production",
+  #value = tags$p(kpis11[2], style = "font-size: 150%;"),
+  #showcase = bsicons::bs_icon("twitter"),
+  #theme = "pink"
+#),
+
+#value_box(
+  #title = "Net Profit",
+  #value = tags$p(kpis11[3], style = "font-size: 150%;"),
+  #showcase = bsicons::bs_icon("cash"),
+  #theme = "primary"
+#)
+#)
+
+#layout_column_wrap(
+  #width = "250px",
+  #!!!vbs11
+#)
+
+
+
+```
+
+## Per Bird
+
+```{r}
+value_box(
+  title = "Cost per Bird",
+  value = tags$p(kpis11[2], style = "font-size: 150%;"),
+  showcase = bsicons::bs_icon("twitter"),
+  theme = "pink"
+)
+
+#value_box(
+  #title = "Profit per Bird",
+  #value = tags$p(kpis11[5], style = "font-size: 150%;"),
+  #showcase = bsicons::bs_icon("cash"),
+  #theme = "primary"
+#)
+
+```
+
 
 
 # Profit / Loss Statement
