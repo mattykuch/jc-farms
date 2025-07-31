@@ -303,40 +303,40 @@ value_box(
 ```{r}
 kpis10 <- jc_dashboard_kpis(df,"10",670)
 
-value_box(
-  title = "Cost of Production",
-  value = tags$p(kpis10[1], style = "font-size: 150%;"),
-  showcase = bsicons::bs_icon("twitter"),
-  theme = "pink"
-)
-
-#vbs10 <- list(
 #value_box(
-  #title = "Revenue",
+ # title = "Cost of Production",
   #value = tags$p(kpis10[1], style = "font-size: 150%;"),
-  #showcase = bsicons::bs_icon("bank2"),
-  #theme = "primary"
-#),
-
-#value_box(
-  #title = "Cost of Production",
-  #value = tags$p(kpis10[2], style = "font-size: 150%;"),
   #showcase = bsicons::bs_icon("twitter"),
   #theme = "pink"
-#),
-
-#value_box(
-  #title = "Net Profit",
-  #value = tags$p(kpis10[3], style = "font-size: 150%;"),
-  #showcase = bsicons::bs_icon("cash"),
-  #theme = "primary"
-#)
 #)
 
-#layout_column_wrap(
-  #width = "250px",
-  #!!!vbs10
-#)
+vbs10 <- list(
+value_box(
+  title = "Revenue",
+  value = tags$p(kpis10[1], style = "font-size: 150%;"),
+  showcase = bsicons::bs_icon("bank2"),
+  theme = "primary"
+),
+
+value_box(
+  title = "Cost of Production",
+  value = tags$p(kpis10[2], style = "font-size: 150%;"),
+  showcase = bsicons::bs_icon("twitter"),
+  theme = "pink"
+),
+
+value_box(
+  title = "Net Profit",
+  value = tags$p(kpis10[3], style = "font-size: 150%;"),
+  showcase = bsicons::bs_icon("cash"),
+  theme = "primary"
+)
+)
+
+layout_column_wrap(
+  width = "250px",
+  !!!vbs10
+)
 
 
 
@@ -347,17 +347,17 @@ value_box(
 ```{r}
 value_box(
   title = "Cost per Bird",
-  value = tags$p(kpis10[2], style = "font-size: 150%;"),
+  value = tags$p(kpis10[4], style = "font-size: 150%;"),
   showcase = bsicons::bs_icon("twitter"),
   theme = "pink"
 )
 
-#value_box(
-  #title = "Profit per Bird",
-  #value = tags$p(kpis10[5], style = "font-size: 150%;"),
-  #showcase = bsicons::bs_icon("cash"),
-  #theme = "primary"
-#)
+value_box(
+  title = "Profit per Bird",
+  value = tags$p(kpis10[5], style = "font-size: 150%;"),
+  showcase = bsicons::bs_icon("cash"),
+  theme = "primary"
+)
 
 ```
 
