@@ -412,7 +412,7 @@ layout_column_wrap(
 ```{r}
 value_box(
   title = "Cost per Bird",
-  value = tags$p(kpis11[2], style = "font-size: 150%;"),
+  value = tags$p(kpis11[4], style = "font-size: 150%;"),
   showcase = bsicons::bs_icon("twitter"),
   theme = "pink"
 )
