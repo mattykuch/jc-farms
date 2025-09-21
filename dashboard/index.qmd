@@ -432,40 +432,40 @@ value_box(
 ```{r}
 kpis12 <- jc_dashboard_kpis(df,"12",350)
 
-value_box(
-  title = "Cost of Production",
-  value = tags$p(kpis12[1], style = "font-size: 150%;"),
-  showcase = bsicons::bs_icon("twitter"),
-  theme = "pink"
-)
-
-#vbs12 <- list(
 #value_box(
-  #title = "Revenue",
+ # title = "Cost of Production",
   #value = tags$p(kpis12[1], style = "font-size: 150%;"),
-  #showcase = bsicons::bs_icon("bank2"),
-  #theme = "primary"
-#),
-
-#value_box(
-  #title = "Cost of Production",
-  #value = tags$p(kpis12[2], style = "font-size: 150%;"),
   #showcase = bsicons::bs_icon("twitter"),
   #theme = "pink"
-#),
-
-#value_box(
-  #title = "Net Profit",
-  #value = tags$p(kpis12[3], style = "font-size: 150%;"),
-  #showcase = bsicons::bs_icon("cash"),
-  #theme = "primary"
-#)
 #)
 
-#layout_column_wrap(
-  #width = "250px",
-  #!!!vbs12
-#)
+vbs12 <- list(
+value_box(
+  title = "Revenue",
+  value = tags$p(kpis12[1], style = "font-size: 150%;"),
+  showcase = bsicons::bs_icon("bank2"),
+  theme = "primary"
+),
+
+value_box(
+  title = "Cost of Production",
+  value = tags$p(kpis12[2], style = "font-size: 150%;"),
+  showcase = bsicons::bs_icon("twitter"),
+  theme = "pink"
+),
+
+value_box(
+  title = "Net Profit",
+  value = tags$p(kpis12[3], style = "font-size: 150%;"),
+  showcase = bsicons::bs_icon("cash"),
+  theme = "primary"
+)
+)
+
+layout_column_wrap(
+  width = "250px",
+  !!!vbs12
+)
 
 
 
@@ -474,19 +474,19 @@ value_box(
 ## Per Bird
 
 ```{r}
-value_box(
-  title = "Cost per Bird",
-  value = tags$p(kpis12[2], style = "font-size: 150%;"),
-  showcase = bsicons::bs_icon("twitter"),
-  theme = "pink"
-)
-
 #value_box(
-  #title = "Profit per Bird",
-  #value = tags$p(kpis12[5], style = "font-size: 150%;"),
-  #showcase = bsicons::bs_icon("cash"),
-  #theme = "primary"
+  #title = "Cost per Bird",
+  #value = tags$p(kpis12[2], style = "font-size: 150%;"),
+  #showcase = bsicons::bs_icon("twitter"),
+  #theme = "pink"
 #)
+
+value_box(
+  title = "Profit per Bird",
+  value = tags$p(kpis12[5], style = "font-size: 150%;"),
+  showcase = bsicons::bs_icon("cash"),
+  theme = "primary"
+)
 
 ```
 
