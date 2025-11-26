@@ -25,6 +25,7 @@ library(readxl)
 library(scales)
 library(formattable)
 library(robotoolbox)
+library(dm)
 
 # Source functions
 source(file="./R-scripts/00-functions.R")
@@ -51,7 +52,7 @@ my_projects_list <- kobo_asset_list()
 
 # Let’s pick the second project and load it
 
-uid <- my_projects_list$uid[2]
+uid <- my_projects_list$uid[1]
 
 # Initialize it as an asset
 asset <- kobo_asset(uid)
@@ -65,6 +66,7 @@ df_raw <- kobo_data(asset)
 # Sometimes R automatically converts special characters (spaces, parentheses).
 # If your 'Amount (UGX)' column is not easy to reference, rename it:
 
+
 df <- df_raw |> 
   rename(
     Amount_UGX = amount_manual,
@@ -72,6 +74,7 @@ df <- df_raw |>
   ) |> 
   filter( account_type != "capex") |> 
   filter(Batch_Number != "3")
+
 
 
 ```
