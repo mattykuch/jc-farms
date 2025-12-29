@@ -223,8 +223,9 @@ value_box(
 
 # Batch Trends and Patterns Analysis
 
-https://quarto.org
+Click link: 
 
+[JC Trends Report](https://mattykuch.github.io/jc-farms/dashboard/trends_jc_farms.html){.external target="_blank"}
 
 # Profit / Loss Statement
 ```{r}
