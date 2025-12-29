@@ -73,9 +73,12 @@ df <- df_raw |>
     Batch_Number = batch
   ) |> 
   filter( account_type != "capex") |> 
-  filter(Batch_Number != "3")
+  filter(Batch_Number != "3") |> 
+  select(!("_attachments"))
 
+glimpse(df)
 
+# write.csv(df, "data/jc_farms_transaction_data_20251228.csv",row.names = FALSE)
 
 ```
 
