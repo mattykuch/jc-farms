@@ -89,7 +89,7 @@ transactions <- df
 
 
 
-# Batch 15
+# Batch 15 (Closed)
 
 
 ```{r}
