@@ -1,0 +1,80 @@
+name: Render and Deploy Dashboard
+
+on:
+  schedule:
+    # Daily at 06:00 UTC (09:00 EAT)
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'dashboard/**'
+      - '.github/workflows/render-deploy.yml'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  render-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.3.2'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
+
+      - name: Install R packages
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          working-directory: dashboard
+
+      - name: Setup Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Render dashboard
+        env:
+          KOBO_TOKEN: ${{ secrets.KOBO_TOKEN }}
+        run: |
+          cd dashboard
+          quarto render index.qmd
+
+      - name: Prepare deployment directory
+        run: |
+          mkdir -p _deploy/dashboard
+          cp index.html _deploy/
+          if [ -d "dashboard/_site" ]; then
+            cp -r dashboard/_site/* _deploy/dashboard/
+          else
+            cp dashboard/index.html _deploy/dashboard/
+            [ -d "dashboard/index_files" ] && cp -r dashboard/index_files _deploy/dashboard/
+          fi
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _deploy
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

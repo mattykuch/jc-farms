@@ -1,0 +1,20 @@
+Type: project
+Title: JC Farms Dashboard
+Description: Poultry farm analytics dashboard
+Imports:
+    tidyverse,
+    lubridate,
+    DT,
+    bslib,
+    bsicons,
+    shiny,
+    gt,
+    glue,
+    kableExtra,
+    readxl,
+    scales,
+    formattable,
+    robotoolbox,
+    haven,
+    plotly,
+    knitr
