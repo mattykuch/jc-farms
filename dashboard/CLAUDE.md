@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-JC Poultry Farm Dashboard — a Quarto-based analytics dashboard tracking financial and operational performance of a poultry farming business in Uganda. Data is sourced live from KoboToolbox via API and rendered as a static HTML dashboard deployed to GitHub Pages via GitHub Actions.
+JC Poultry Farm Dashboard — a Quarto-based analytics dashboard tracking financial and operational performance of a poultry farming business in Uganda. Data is sourced live from KoboToolbox via API and rendered as a static HTML dashboard.
 
 ## Build Commands
 
@@ -12,7 +12,10 @@ JC Poultry Farm Dashboard — a Quarto-based analytics dashboard tracking financ
 # Render the dashboard (requires KOBO_TOKEN env var)
 cd dashboard && quarto render index.qmd
 
-# For local dev, set the token first:
+# Render the trends/SPC report
+cd dashboard && quarto render trends.qmd
+
+# For local dev, set the token:
 # Option 1: Create dashboard/.Renviron with KOBO_TOKEN=your_token
 # Option 2: export KOBO_TOKEN=your_token
 ```
@@ -21,12 +24,7 @@ Rendering requires R with the packages listed in `dashboard/DESCRIPTION`. Instal
 
 ## Deployment
 
-GitHub Actions (`.github/workflows/render-deploy.yml`) handles automated deployment:
-- **Daily** at 06:00 UTC (09:00 EAT)
-- **On push** to `main` when `dashboard/**` files change
-- **Manual** via the "Run workflow" button in GitHub Actions
-
-The workflow pulls data from KoboToolbox using the `KOBO_TOKEN` GitHub Secret, renders the Quarto dashboard, and deploys to GitHub Pages. The Pages source must be set to "GitHub Actions" in repo settings.
+Manual: render locally, then push the `_site/` output to GitHub Pages (or commit and push source files).
 
 ## Architecture
 
@@ -39,12 +37,16 @@ The workflow pulls data from KoboToolbox using the `KOBO_TOKEN` GitHub Secret, r
 
 ### Key Files
 
-- **`index.qmd`** — Unified 5-page dashboard (`format: dashboard`):
-  - **Overview**: Farm-level KPI cards with conditional coloring, latest batch detail, two inline SPC charts
-  - **Batch Details**: Dynamically generated tabs for every batch via `bslib::navset_card_tab()` — no hardcoding
-  - **SPC Analysis**: 5 interactive plotly SPC control charts + summary tables with conditional coloring
+- **`index.qmd`** — Main dashboard (`format: dashboard`) with 4 pages:
+  - **Batches**: Dynamically generated tabs for batches 15+ via `bslib::navset_card_tab()` — no hardcoding. Each tab: 5 KPI value boxes (Revenue, Cost, Net Profit, Cost/Bird, Profit/Bird) + status badge + bird count
+  - **Trends & Analysis**: Link to the separate `trends.html` SPC report
   - **P&L Statement**: Full profit/loss across all batches (Excel for 1-3, API for 4+)
   - **Data**: Filterable transaction data table
+
+- **`trends.qmd`** — Standalone HTML report with SPC analysis:
+  - Financial summary and bird production tables (gt)
+  - 5 interactive plotly SPC control charts (Profit Margin, Cost/Bird, FCR, Avg Sale Price, Mortality Rate)
+  - Covers all batches (4+)
 
 - **`R-scripts/00-functions.R`** — All helper functions:
   - `jc_connect_kobo()` — KoboToolbox API connection
@@ -54,11 +56,10 @@ The workflow pulls data from KoboToolbox using the `KOBO_TOKEN` GitHub Secret, r
   - `jc_spc_plotly(df, metric, ylab, title)` — interactive SPC charts with plotly
   - `jc_kpi_theme(value, good, warn)` — conditional color theming for value boxes
   - `jc_pnl_by_batch(data, batch_num)` — P&L category breakdown per batch
-  - `jc_sparkline(values, color)` — mini sparkline charts
 
 - **`_quarto.yml`** — Project config (output to `_site/`)
-- **`DESCRIPTION`** — R package dependencies (used by GitHub Actions for caching)
-- **`style.css`** — Custom styles for conditional coloring, badges, value boxes
+- **`DESCRIPTION`** — R package dependencies
+- **`style.css`** — Custom styles for value boxes, tab spacing, badges, conditional coloring
 
 ### Data Model
 
@@ -74,6 +75,7 @@ After `jc_clean_data()`: `amount_manual` -> `Amount_UGX`, `batch` -> `Batch_Numb
 ### Known Gotchas
 
 - **Haven labels**: KoboToolbox data via `robotoolbox` returns `haven_labelled` columns. `jc_clean_data()` strips these for the main pipeline. `jc_pnl_by_batch()` also strips them internally since it receives raw `df_raw` data. Always use `as.character()` before `as.integer()` on batch numbers.
+- **Mortality for active batches**: Mortality rate is only calculated for closed batches (where `revenue > 0`). Active batches have `birds_sold = 0`, which would incorrectly show 100% mortality.
 - **Quarto `!expr` in chunk options**: Values must be YAML-quoted when they contain curly braces, e.g. `#| title: !expr 'glue("Batch {x}")'`
 - **`data_color()` in gt**: Color functions must handle `NA` — return a fallback color like `"#6c757d"` for missing values.
 
@@ -81,6 +83,7 @@ After `jc_clean_data()`: `amount_manual` -> `Amount_UGX`, `batch` -> `Batch_Numb
 
 - Currency is Ugandan Shillings (UGX), formatted with `format(x, big.mark = ",")`
 - Batch numbers are strings in the data pipeline; converted to integer for sorting/plotting in `jc_batch_summary()`
+- Dashboard shows batches 15+ only; older batches (4-14) appear in the trends report summary tables and SPC charts
 - R code uses tidyverse style with pipe operators (`|>` and `%>%` both used)
 - KPI thresholds: Profit Margin green >= 20%, amber >= 10%, red < 10%; Mortality green <= 4%, amber <= 7%, red > 7%
 - SPC charts use Shewhart method: mean +/- 3 standard deviations for control limits

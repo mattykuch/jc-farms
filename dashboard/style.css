@@ -39,13 +39,16 @@ a {
 
 /* Value box typography — smaller to prevent overflow on large numbers */
 .bslib-value-box .value-box-value {
-  font-size: 1.1rem;
+  font-size: 0.95rem !important;
+  white-space: nowrap;
 }
 
-/* Batch tab spacing */
-.nav-tabs .nav-link {
-  padding: 0.5rem 1.2rem;
-  margin-right: 0.3rem;
+/* Batch tab spacing — generous padding between tab labels */
+.nav-link,
+.nav-tabs .nav-link,
+.nav-pills .nav-link {
+  padding: 0.5rem 1.5rem !important;
+  margin-right: 0.5rem !important;
 }
 
 /* Badge styling inside batch details */
