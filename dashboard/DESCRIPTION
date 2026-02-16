@@ -1,7 +1,7 @@
-Type: project
+Package: jcfarms
 Title: JC Farms Dashboard
-Description: Poultry farm analytics dashboard
-Imports:
+Version: 0.0.1
+Depends:
     tidyverse,
     lubridate,
     DT,
