@@ -55,6 +55,7 @@ jobs:
         run: |
           cd dashboard
           quarto render index.qmd
+          quarto render archive.qmd
 
       - name: Prepare deployment directory
         run: |

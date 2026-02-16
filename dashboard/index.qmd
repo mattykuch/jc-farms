@@ -32,17 +32,21 @@ df <- jc_clean_data(df_raw)
 # Compute batch summary for SPC and trends
 batch_summ <- jc_batch_summary(df)
 
-# Identify batches (sorted descending)
+# Identify current batches (15+) — older batches archived in archive.html
 all_batches <- sort(unique(as.integer(as.character(df$Batch_Number))), decreasing = TRUE)
+all_batches <- all_batches[all_batches >= 15]
 latest_batch <- as.character(all_batches[1])
 prev_batch <- if (length(all_batches) > 1) as.character(all_batches[2]) else NULL
+
+# Batch summary filtered to current batches (for overview KPIs)
+batch_summ_current <- batch_summ |> filter(Batch >= 15)
 
 # KPIs for latest and previous batch
 kpi_latest <- jc_dashboard_kpis(df, latest_batch)
 kpi_prev <- if (!is.null(prev_batch)) jc_dashboard_kpis(df, prev_batch) else NULL
 
-# Recent batches for sparklines (last 6)
-recent <- tail(batch_summ, 6)
+# Recent batches for sparklines (last 6 of current batches)
+recent <- tail(batch_summ_current, 6)
 
 # Helper: format change vs previous batch
 fmt_change <- function(current, previous) {
@@ -96,7 +100,7 @@ cpb_trend <- if (nrow(recent) >= 2 && !is.na(recent$cost_per_bird[nrow(recent)])
 } else "primary"
 
 value_box(
-  title = "Avg Cost/Bird (Last 6 Batches, UGX)",
+  title = "Avg Cost/Bird (Recent Batches, UGX)",
   value = tags$p(avg_cpb_fmt, style = "font-size: 130%;"),
   showcase = bsicons::bs_icon("piggy-bank"),
   theme = cpb_trend
@@ -198,7 +202,15 @@ jc_spc_plotly(batch_summ, "cost_per_bird", "Cost per Bird (UGX)", "Cost Per Bird
 ## Row
 
 ```{r}
-#| title: All Batches
+#| title: Current Batches (15+)
+
+# Archive link
+tags$div(
+  class = "alert alert-info mb-3",
+  tags$strong("Looking for older batches?"),
+  " Batches 4–14 are available in the ",
+  tags$a(href = "archive.html", "Batch Archive Report"), "."
+)
 
 # Build a tabbed panel for every batch (newest first)
 batch_tabs <- lapply(all_batches, function(b) {
@@ -262,9 +274,9 @@ do.call(bslib::navset_card_tab, batch_tabs)
 ### Column
 
 ```{r}
-#| title: Financial Summary — All Batches
+#| title: Financial Summary — Current Batches
 
-batch_summ %>%
+batch_summ_current %>%
   select(Batch, revenue, cost, profit, profit_per_bird, profit_margin, cost_per_bird, avg_sale_price) %>%
   gt() %>%
   fmt_number(columns = c(revenue, cost, profit), decimals = 0) %>%
@@ -294,7 +306,7 @@ batch_summ %>%
 ```{r}
 #| title: Bird Production Efficiency
 
-batch_summ %>%
+batch_summ_current %>%
   select(Batch, birds_purchased, birds_sold, birds_mortality, mortality_rate) %>%
   gt() %>%
   fmt_number(columns = c(birds_purchased, birds_sold, birds_mortality), decimals = 0) %>%
@@ -374,7 +386,15 @@ SPC helps distinguish normal batch-to-batch variation from signals that need inv
 ## Row
 
 ```{r}
-#| title: Profit & Loss Statement — All Batches
+#| title: Profit & Loss Statement — Current Batches
+
+# Archive link
+tags$div(
+  class = "alert alert-info mb-3",
+  tags$strong("Looking for older batches?"),
+  " P&L for Batches 4–14 is available in the ",
+  tags$a(href = "archive.html", "Batch Archive Report"), "."
+)
 
 # Batches 1-3 from Excel
 pnl_data <- read_excel("data/JC Poultry Farm - Business Operating Model_v1_250323.xlsx",
@@ -390,9 +410,9 @@ pnl_statement <- pnl_data %>%
   ) %>%
   select(Category, "Batch 1", "Batch 2", "Batch 3")
 
-# Batches 4+ from API data (dynamically)
+# Batches 15+ from API data (dynamically)
 api_batches <- sort(unique(as.integer(as.character(df_raw$batch[as.character(df_raw$batch) != "3"]))))
-api_batches <- api_batches[api_batches >= 4]
+api_batches <- api_batches[api_batches >= 15]
 
 final_pnl <- pnl_statement
 for (b in api_batches) {
@@ -424,6 +444,7 @@ final_pnl %>%
 #| title: Transaction Data
 
 batch_data <- df %>%
+  filter(as.integer(as.character(Batch_Number)) >= 15) %>%
   select(-c("start", "end"))
 
 datatable(batch_data, filter = "top",
