@@ -24,7 +24,7 @@ Rendering requires R with the packages listed in `dashboard/DESCRIPTION`. Instal
 
 ## Deployment
 
-Manual: render locally, then push the `_site/` output to GitHub Pages (or commit and push source files).
+Run `bash deploy.sh` from the repo root. This renders both `.qmd` files, copies `_site/` output to the `gh-pages` branch, and pushes to upstream. Requires `KOBO_TOKEN` to be set. The site is served at `mattykuch.github.io/jc-farms/`.
 
 ## Architecture
 
