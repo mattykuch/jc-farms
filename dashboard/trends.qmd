@@ -1,0 +1,132 @@
+---
+title: "JC Farms — Batch Trends & SPC Analysis"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    css: style.css
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+
+library(tidyverse)
+library(lubridate)
+library(bslib)
+library(bsicons)
+library(shiny)
+library(gt)
+library(glue)
+library(scales)
+library(formattable)
+library(robotoolbox)
+library(plotly)
+library(knitr)
+
+source(file = "./R-scripts/00-functions.R")
+
+# Connect and load data
+df_raw <- jc_connect_kobo()
+df <- jc_clean_data(df_raw)
+batch_summ <- jc_batch_summary(df)
+```
+
+[Back to Dashboard](index.html)
+
+## Financial Summary
+
+```{r}
+batch_summ %>%
+  select(Batch, revenue, cost, profit, profit_per_bird, profit_margin, cost_per_bird, avg_sale_price) %>%
+  gt() %>%
+  fmt_number(columns = c(revenue, cost, profit), decimals = 0) %>%
+  fmt_number(columns = c(profit_per_bird, cost_per_bird, avg_sale_price), decimals = 0) %>%
+  fmt_number(columns = c(profit_margin), decimals = 1) %>%
+  cols_label(
+    Batch = "Batch",
+    revenue = "Revenue (UGX)",
+    cost = "Cost (UGX)",
+    profit = "Net Profit (UGX)",
+    profit_per_bird = "Profit/Bird (UGX)",
+    profit_margin = "Margin (%)",
+    cost_per_bird = "Cost/Bird (UGX)",
+    avg_sale_price = "Avg Price (UGX)"
+  ) %>%
+  tab_header(title = "Financial Performance Summary") %>%
+  data_color(
+    columns = profit_margin,
+    fn = function(x) ifelse(is.na(x), "#6c757d", ifelse(x >= 20, "#198754", ifelse(x >= 10, "#ffc107", "#dc3545")))
+  )
+```
+
+## Bird Production Efficiency
+
+```{r}
+batch_summ %>%
+  select(Batch, birds_purchased, birds_sold, birds_mortality, mortality_rate) %>%
+  gt() %>%
+  fmt_number(columns = c(birds_purchased, birds_sold, birds_mortality), decimals = 0) %>%
+  fmt_number(columns = c(mortality_rate), decimals = 1) %>%
+  cols_label(
+    Batch = "Batch",
+    birds_purchased = "Purchased",
+    birds_sold = "Sold",
+    birds_mortality = "Lost (Mortality)",
+    mortality_rate = "Mortality %"
+  ) %>%
+  tab_header(title = "Bird Production Summary") %>%
+  data_color(
+    columns = mortality_rate,
+    fn = function(x) ifelse(is.na(x), "#6c757d", ifelse(x <= 4, "#198754", ifelse(x <= 7, "#ffc107", "#dc3545")))
+  )
+```
+
+## SPC Charts
+
+### Profit Margin
+
+```{r}
+jc_spc_plotly(batch_summ, "profit_margin", "Profit Margin (%)", "Profit Margin per Batch")
+```
+
+### Cost per Bird
+
+```{r}
+jc_spc_plotly(batch_summ, "cost_per_bird", "Cost per Bird (UGX)", "Cost Per Bird per Batch")
+```
+
+### Feed Conversion Ratio
+
+```{r}
+jc_spc_plotly(batch_summ, "fcr", "FCR", "Feed Cost as % of Revenue (FCR)")
+```
+
+### Average Sale Price
+
+```{r}
+jc_spc_plotly(batch_summ, "avg_sale_price", "Avg Sale Price (UGX)", "Average Sale Price per Batch")
+```
+
+### Mortality Rate
+
+```{r}
+jc_spc_plotly(batch_summ, "mortality_rate", "Mortality Rate (%)", "Bird Mortality Rate per Batch")
+```
+
+## Reading SPC Charts
+
+Each chart shows batch performance against the statistical mean (red solid line) and control limits (dashed red lines at +/- 3 standard deviations).
+
+- **Red dots** indicate batches outside the control limits — these are signals, not noise
+- Points consistently above/below the mean suggest a process shift
+- Targets: Margin >= 20%, Mortality <= 4%, declining Cost/Bird
+
+SPC helps distinguish normal batch-to-batch variation from signals that need investigation.
+
+---
+
+*[Back to Dashboard](index.html)*

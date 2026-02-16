@@ -231,23 +231,3 @@ jc_pnl_by_batch <- function(data, batch_num) {
 
   batch_full
 }
-
-# Create a tiny sparkline-style plotly chart for value box showcases
-jc_sparkline <- function(values, color = "#2E86AB") {
-  plot_ly(
-    x = seq_along(values), y = values,
-    type = "scatter", mode = "lines",
-    line = list(color = color, width = 2),
-    fill = "tozeroy",
-    fillcolor = paste0(color, "33")
-  ) |>
-    layout(
-      xaxis = list(visible = FALSE, fixedrange = TRUE),
-      yaxis = list(visible = FALSE, fixedrange = TRUE),
-      margin = list(l = 0, r = 0, t = 0, b = 0),
-      paper_bgcolor = "transparent",
-      plot_bgcolor = "transparent",
-      showlegend = FALSE
-    ) |>
-    config(displayModeBar = FALSE)
-}
