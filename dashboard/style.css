@@ -37,9 +37,15 @@ a {
 .profit-positive { color: #198754; }
 .profit-negative { color: #dc3545; }
 
-/* Value box typography */
+/* Value box typography — smaller to prevent overflow on large numbers */
 .bslib-value-box .value-box-value {
-  font-size: 1.4rem;
+  font-size: 1.1rem;
+}
+
+/* Batch tab spacing */
+.nav-tabs .nav-link {
+  padding: 0.5rem 1.2rem;
+  margin-right: 0.3rem;
 }
 
 /* Badge styling inside batch details */
