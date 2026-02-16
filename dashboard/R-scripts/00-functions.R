@@ -44,7 +44,8 @@ jc_dashboard_kpis <- function(data, batch_num) {
 
   cost_per_bird <- if (num_birds > 0) round(cost / num_birds) else NA
   profit_per_bird <- if (num_birds > 0) round(net_profit / num_birds) else NA
-  mortality_rate <- if (birds_purchased > 0) round(100 * (birds_purchased - birds_sold) / birds_purchased, 1) else NA
+  # Only calculate mortality for closed batches (with sales); active batches have birds_sold=0 which would show 100%
+  mortality_rate <- if (birds_purchased > 0 && revenue > 0) round(100 * (birds_purchased - birds_sold) / birds_purchased, 1) else NA
   profit_margin <- if (revenue > 0) round(100 * net_profit / revenue, 1) else NA
 
   fmt <- function(x) format(x, big.mark = ",", scientific = FALSE)
@@ -82,8 +83,8 @@ jc_batch_summary <- function(data) {
       .groups = "drop"
     ) |>
     mutate(
-      birds_mortality = birds_purchased - birds_sold,
-      mortality_rate = if_else(birds_purchased > 0, 100 * birds_mortality / birds_purchased, NA_real_),
+      birds_mortality = if_else(revenue > 0, birds_purchased - birds_sold, NA_real_),
+      mortality_rate = if_else(birds_purchased > 0 & revenue > 0, 100 * (birds_purchased - birds_sold) / birds_purchased, NA_real_),
       profit = revenue - cost,
       profit_margin = if_else(revenue > 0, 100 * profit / revenue, NA_real_),
       cost_per_bird = if_else(birds_sold > 0, cost / birds_sold, NA_real_),
