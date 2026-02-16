@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"c:/Users/HP/Desktop/Parking Lot/1 Frequently Used/Web Projects/jc-farms\" remote -v)",
+      "Bash(git checkout:*)",
+      "Bash(echo:*)",
+      "Bash(test:*)",
+      "Bash(quarto render:*)"
+    ]
+  }
+}
